@@ -90,7 +90,7 @@ async function handleAuthResponse() {
   if (code) {
       const accessToken = await getAccessToken(code);
       const songs = await getLikedSongs(accessToken);
-      const youtubeLinks = await Promise.all(songs.map(song => searchYoutube('AIzaSyDeby8kdPYzUQawOqFiNRp_UJ34Zmvaag8', song.name, song.artists[0].name)));
+      const youtubeLinks = await Promise.all(songs.map(song => searchYoutube(song.name, song.artists[0].name))); 
       displaySongs(songs, youtubeLinks);
 
       document.getElementById('loginSection').style.display = 'none';
