@@ -8,7 +8,7 @@ body {
 
 @font-face {
     font-family: 'Lamarkie';
-    src: url(./CELTG___.TTF);
+    src: url(./utils/CELTG___.TTF);
 }
 
 #loginSection {
