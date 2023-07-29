@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    background-image: url(./img/pexels-do-the-lan-1293551.jpg);
+    background-size: cover;
+    font-family: 'Poppins', sans-serif;
+}
+
+@font-face {
+    font-family: 'Lamarkie';
+    src: url(./CELTG___.TTF);
+}
+
+#loginSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    border: double 3px transparent;
+    background-image: linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)), linear-gradient(90deg, rgba(29, 185, 84, 0.7), rgba(30, 215, 96, 0.7));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    box-shadow: 2px 1000px 1px rgba(0, 0, 0, 0.7) inset;
+}
+
+#loginButton {
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: #1ed760;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+#loginButton:hover {
+    background-color: #1db954;
+    transform: translateY(-3px);
+}
+
+#loginButton:focus {
+    outline: none;
+}
+
+#loginSection h1 {
+    font-size: 42px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #fff;
+    letter-spacing: 3px;
+    font-family: 'Lamarkie', sans-serif;
+}
+
+#loginSection h2 {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.6;
+    text-align: center;
+    color: #fff;
+    letter-spacing: 2px;
+}
