@@ -4,14 +4,8 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-@font-face {
-    font-family: 'Lamarkie';
-    src: url('./utils/CELTG___.TTF');
-}
-
 #loginSection {
-    background-image: url(./img/pexels-do-the-lan-1293551.jpg);
-    background-size: cover;
+    background-color: #f0f0f0; /* Light grey color */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -22,15 +16,9 @@ body {
     transform: translate(-50%, -50%);
     padding: 30px;
     border-radius: 15px;
-    background: rgba(0, 0, 0, 0.7);
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
     border: double 3px transparent;
-    background-image: linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)), linear-gradient(90deg, rgba(29, 185, 84, 0.7), rgba(30, 215, 96, 0.7));
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    box-shadow: 2px 1000px 1px rgba(0, 0, 0, 0.7) inset;
 }
-
 #loginButton {
     padding: 15px 30px;
     font-size: 18px;
@@ -57,9 +45,9 @@ body {
     font-size: 42px;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #fff;
+    color: #000000;
     letter-spacing: 3px;
-    font-family: 'Lamarkie', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 #loginSection h2 {
@@ -67,7 +55,7 @@ body {
     font-weight: 400;
     line-height: 1.6;
     text-align: center;
-    color: #fff;
+    color: #070707;
     letter-spacing: 2px;
 }
 
@@ -122,4 +110,24 @@ body {
   margin: 10px 0;
   outline: none;
   border: none;
+}
+
+#authorizedSection h2 {
+    font-size: 32px;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    font-family: 'Lamarkie', sans-serif;
+}
+
+#authorizedSection h2 #userName {
+    color: #1ed760;
+    font-weight: 700;
+}
+
+#authorizedSection p {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.6;
 }
