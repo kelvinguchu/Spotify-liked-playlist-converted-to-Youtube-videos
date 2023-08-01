@@ -3,20 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spotify Data Scraper</title>
+  <title>Youtubify</title>
   <link rel="stylesheet" href="style.css">
 </head>
+<body>
   <main>
     <section id="loginSection">
       <h1>Youtubify</h1>
       <h2>Sp<i class="fab fa-spotify"></i>tify</i> <br>to <br>YouT<i class="fab fa-youtube"></i>be</i></h2>
       <button id="loginButton">Login with Spotify</button>
     </section>
-
+    <div id="loadingAnimation" style="display: none;">
+      <!-- Place your loading animation here -->
+      <div class="loader"></div>
+    </div>  
     <section id="authorizedSection" style="display: none;">
-      <h2>Welcome, <span id="userName"></span>!</h2>
-      <p>You are now logged in with your Spotify account.</p>
-
+      <div class="navbar">
+        <h2><span id="userName"></span></h2>
+        <p>Good Taste😍🤤</p>
+      </div>
       <!-- Data Scraping and other sections go here -->
       <ul id="song-list">
         <!-- Songs will be populated here -->
@@ -31,11 +36,9 @@
           </div>
         </li>
       </ul>
-      
-      </section>
     </section>
   </main>
-</body>
 <script src="script.js"></script>
 <script src="https://kit.fontawesome.com/6dfed83f8d.js" crossorigin="anonymous"></script>
+</body>
 </html>
