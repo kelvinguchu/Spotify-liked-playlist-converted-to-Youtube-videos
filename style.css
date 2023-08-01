@@ -216,3 +216,7 @@ body {
   100% { transform: translate(-50%, -50%) scale(1.1); }
 }
 
+.navbar p {
+  margin-right: 10px;
+  transition: opacity 1s ease-in-out;
+}
