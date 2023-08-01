@@ -177,6 +177,80 @@ async function handleAuthResponse() {
   };
 };
 
+// Create an array of messages
+const messages = [
+  'Good Taste 😍🤤',
+  'Fantastic Playlist 🎧🔥',
+  'Vibe High 🙌💃',
+  'Music for the Soul 🎶❤️',
+  'Keep Jammin 🤘🎸',
+  'Rock On 🥁🤩',
+  'Smooth Grooves 🎷🎵',
+  'You Got The Beat 🎹🎼',
+  'Sound Of Happiness 😄🔊',
+  'Perfect Harmony 🎤✨',
+  'Dance With The Melody 💃🎶',
+  'Feel The Rhythm 🕺💥',
+  'Sonic Bliss 🎧💞',
+  'Soundtrack of Life 🌍🎵',
+  'Turn Up The Volume 🎚️🔊',
+  'Lost In The Music 🎧🎶',
+  'Jazz It Up 🎺💫',
+  'Classical Mood 🎻🌟',
+  'Pop It Up 🎈🔥',
+  'Raise The Bar 🏋️🎼',
+  'Hip Hop Non-Stop 🕴️🎵',
+  'In The Groove 🌊🎶',
+  'Country Vibes 🤠🌾',
+  'Rave On 🎇🔊',
+  'Heavy Metal 🏋️‍♀️🎸',
+  'Breezy Blues 🌬️🎷',
+  'Epic Orchestra 🎻🎼',
+  'Funky Beats 🕺💥',
+  'Reggae Relax 🌴☀️',
+  'Punk Power 🤘🔥',
+  'Indie Inspirations 💡🎶',
+  'Disco Fever 🕺🔥',
+  'Soulful Sounds 🎶💗',
+  'Sizzling Salsa 💃🌶️',
+  'Rhythm & Blues 🎶🎷',
+  'Gospel Glory 🌞🎤',
+  'Trance Trip 🌀🎵',
+  'Bollywood Beats 💃🥁',
+  'K-Pop Krazy 🎉🎤',
+  'Celtic Charm 🍀🎻',
+  'Soothing Symphony 🎵🌙',
+  'Vocal Vibrations 🎤🌈',
+  'Rockabilly Rumble 🎸🕺',
+  'Dubstep Drop 🎧🌪️',
+  'Techno Trip 🎵🤖',
+  'A Capella Amazing 🎤💫',
+  'Reggaeton Rhythm 💃🥁',
+  'Psychedelic Sounds 🎵🌈',
+  'EDM Energy 🎧💥',
+  'Folklore Feel 🎻🌳'
+];
+
+let index = 0;
+
+// Function to change the message
+function changeMessage() {
+  const p = document.querySelector('.navbar p'); // Select the p element
+  p.style.opacity = "0"; // Start the fade out
+
+  setTimeout(() => {
+    p.textContent = messages[index]; // Change the text while it's not visible
+    p.style.opacity = "1"; // Start the fade in
+  }, 1000);
+
+  // Move to the next message, loop back to the start if we've reached the end
+  index = (index + 1) % messages.length;
+}
+
+// Change the message every 1 seconds
+setInterval(changeMessage, 10000);
+
+
 // Event listener to handle document ready event
 document.addEventListener('DOMContentLoaded', function() {
   const logButton = document.getElementById('loginButton');
