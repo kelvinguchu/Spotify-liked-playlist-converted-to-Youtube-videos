@@ -14,8 +14,8 @@ body {
   padding: 20px;
   background-color: #282828;  /* Dark grey color */
   color: #fff;  /* White text color */
-  border-top-right-radius: 5px;
-  border-top-left-radius: 5px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   margin-left: 40px;
 }
 
@@ -219,4 +219,19 @@ body {
 .navbar p {
   margin-right: 10px;
   transition: opacity 1s ease-in-out;
+}
+
+@media (max-width: 600px) {
+  .card_info {
+    font-size: 14px;
+  }
+
+  #userName img {
+    height: 30px;
+    width: 30px;
+  }
+
+  .navbar p {
+    font-size: 12px;
+  }
 }
