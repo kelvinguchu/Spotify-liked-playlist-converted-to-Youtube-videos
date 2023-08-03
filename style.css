@@ -102,6 +102,59 @@ body {
   background-color: white;
 }
 
+#logoutButton {
+  display: inline-block;
+  padding: 5px 16px;
+  width: 10%;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff; /* Text color, change it to match your text color */
+  background-color: #282828; /* Navbar background color */
+  border: 1px solid transparent; /* Transparent border to create space for the gradient */
+  border-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff); /* Gradient border */
+  border-image-slice: 1; /* Ensure the entire border is covered by the gradient */
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(27, 31, 35, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.25); /* Shadows for depth */
+  transition: .2s cubic-bezier(.3,0,.5,1); /* Animation for hover state */
+  text-decoration: none; /* Remove underline */
+  background-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff); /* Gradient background (for text) */
+  background-size: 200% 200%;
+  background-position: 0 100%;
+  color: transparent; /* Hide text for now */
+  -webkit-background-clip: text; /* Clip text with gradient */
+  background-clip: text;
+}
+
+#logoutButton:hover {
+  background-position: 100% 100%; /* Move gradient to the end on hover */
+  color: #fff; /* Show text on hover */
+  border: 3px solid transparent; /* Ensure the border doesn't change color on hover */
+}
+
+#logoutButton:focus {
+  outline: none; /* Remove default outline */
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3); /* Add blue outline on focus */
+}
+
+
+#songSearch {
+  width: 80%;
+  padding: 10px;
+  border: none;
+  border-radius: 15px;
+  margin: 20px 10px;
+  font-size: 16px;
+  background-color: #f0f0f0;
+  transition: all 0.3s ease-in-out;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#songSearch:focus {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+
 #songSection {
     display: flex;
     align-items: center;
@@ -120,13 +173,13 @@ body {
 }
 
 .card {
-  width: 250px; /* Set a fixed width */
+  width: 310px; /* Set a fixed width */
   height: 300px; /* Set a fixed height */
   display: flex;
   flex-direction: column;
   border-radius: 10px;
   overflow: hidden; /* To ensure that the border-radius applies to the video as well */
-  padding: 5px;
+  padding: 3px 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease-in-out; /* For smooth hover effect */
   background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); /* Color gradient background */
@@ -147,7 +200,7 @@ body {
 }
 
 .card_info {
-  padding: 10px;
+  padding: 5px;
   height: 40px; /* Fixed height to ensure that it's the same on all cards */
   box-sizing: border-box; /* To include padding in the height */
 }
@@ -230,6 +283,12 @@ body {
 
 @media (max-width: 600px) {
 
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   .navbar {
     padding: 10px;
     border-top-right-radius: 0;
@@ -251,7 +310,7 @@ body {
     .card {
       width: 98%; /* Set a fixed width */
       height: 300px; /* Set a fixed height */
-      margin: 10px;
+      margin: 5px;
       padding: 2px;
     }
     
@@ -266,10 +325,18 @@ body {
   }
 
   .navbar p {
-    font-size: 12px;
+    display: none;
   }
 
   #song-list {
     gap: 0;
+  }
+
+  #songSearch {
+    width: 95%;
+    border-radius: 15px;
+    margin: 5px 5px;
+    font-size: 16px;
+    border:1px solid #1ed760;
   }
 }
