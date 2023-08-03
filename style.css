@@ -1,9 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #F7F7F7;
-    margin-right: 15px;
 }
 
 /* Style for navbar */
@@ -16,7 +21,7 @@ body {
   color: #fff;  /* White text color */
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  margin-left: 40px;
+  margin:10px;
 }
 
 /* Style for h2 in navbar */
@@ -52,6 +57,7 @@ body {
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
     border: double 3px transparent;
 }
+
 #loginButton {
     padding: 15px 30px;
     font-size: 18px;
@@ -109,15 +115,16 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   list-style: none;
-  gap: 0.3rem; /* Space between the cards */
+  gap: 0.8rem; /* Space between the cards */
+  margin: 10px;
 }
 
 .card {
-  width: 200px; /* Set a fixed width */
+  width: 250px; /* Set a fixed width */
   height: 300px; /* Set a fixed height */
   display: flex;
   flex-direction: column;
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden; /* To ensure that the border-radius applies to the video as well */
   padding: 5px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
@@ -149,8 +156,6 @@ body {
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
   transform: scale(1.05); /* Slightly increase size on hover */
 }
-
-  
 
 #song-list li:hover {
   transform: scale(1.05);
@@ -221,17 +226,50 @@ body {
   transition: opacity 1s ease-in-out;
 }
 
+
+
 @media (max-width: 600px) {
+
+  .navbar {
+    padding: 10px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    margin-left: 0;
+  }  
+
+      /* Style for h2 in navbar */
+    .navbar h2 {
+      margin: 0;  /* Remove default margins */
+      font-size: 16px;  /* Make the font size larger */
+    }
+
+    /* Style for span (username) in h2 */
+    .navbar h2 span {
+      font-size: 16px;
+    }
+
+    .card {
+      width: 98%; /* Set a fixed width */
+      height: 300px; /* Set a fixed height */
+      margin: 10px;
+      padding: 2px;
+    }
+    
   .card_info {
     font-size: 14px;
+    height: 35px;
   }
 
   #userName img {
-    height: 30px;
-    width: 30px;
+    height: 20px;
+    width: 20px;
   }
 
   .navbar p {
     font-size: 12px;
+  }
+
+  #song-list {
+    gap: 0;
   }
 }
