@@ -76,17 +76,14 @@ async function searchYoutube(songName, artistName) {
 };
 
 // Function to display songs and their corresponding YouTube links on webpage
-function displaySongs(songs, youtubeLinks) {
+// Function to display songs and their corresponding YouTube links on webpage
+function displaySongs(songs, youtubeLinks, viewCounts) {
   const list = document.getElementById('song-list');
   songs.forEach((song, i) => {
     const listItem = document.createElement('li');
     listItem.className = 'card';
-    
-    const songInfo = document.createElement('p');
-    songInfo.className = 'card_info';
-    songInfo.textContent = `${song.name} by ${song.artists[0].name}`;
-    listItem.appendChild(songInfo);
 
+    // YouTube embed container
     const youtubeEmbedContainer = document.createElement('div');
     youtubeEmbedContainer.className = 'card_video';
     const youtubeEmbed = document.createElement('iframe');
@@ -98,16 +95,22 @@ function displaySongs(songs, youtubeLinks) {
     youtubeEmbed.style.borderRadius = "15px";
     youtubeEmbed.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     youtubeEmbed.allowFullscreen = true;
-
-    // Add the loading attribute to the iframe
-    youtubeEmbed.loading = "lazy";
-    
+    youtubeEmbed.loading = "lazy"; // Enable lazy loading
     youtubeEmbedContainer.appendChild(youtubeEmbed);
-    
     listItem.appendChild(youtubeEmbedContainer);
+    
+    // Song info and view count
+    const songInfo = document.createElement('p');
+    songInfo.className = 'card_info';
+    songInfo.textContent = `${song.name} by ${song.artists[0].name}`;
+    listItem.appendChild(songInfo);
+
+  //
+
     list.appendChild(listItem);
   });
 };
+
 
 // Function to retrieve user profile from Spotify
 async function getUserProfile(accessToken) {
@@ -298,4 +301,23 @@ document.addEventListener('DOMContentLoaded', function() {
   const logButton = document.getElementById('loginButton');
   logButton.addEventListener('click', redirectToSpotifyAuth);
   window.onload = handleAuthResponse;
+
+  // Add an input event listener to the search field
+  const searchField = document.getElementById('songSearch');
+  searchField.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const songs = document.querySelectorAll('#song-list .card');
+    songs.forEach(song => {
+      const songName = song.querySelector('.card_info').textContent.toLowerCase();
+      song.style.display = songName.includes(query) ? 'flex' : 'none';
+    });
+  });
+  const logoutButton = document.getElementById('logoutButton');
+  logoutButton.addEventListener('click', function() {
+    // Clear the access token from local storage
+    localStorage.removeItem('spotifyAccessToken');
+    // Reload the page
+    location.reload();
+  });
 });
+
