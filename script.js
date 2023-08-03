@@ -31,6 +31,7 @@ async function getAccessToken(code) {
     throw new Error(`HTTP error! status: ${response.status}`);
   } else {
     const data = await response.json();
+    sessionStorage.setItem('spotify_access_token', data.access_token);
     return data.access_token;
   };
 };
@@ -97,6 +98,10 @@ function displaySongs(songs, youtubeLinks) {
     youtubeEmbed.style.borderRadius = "15px";
     youtubeEmbed.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     youtubeEmbed.allowFullscreen = true;
+
+    // Add the loading attribute to the iframe
+    youtubeEmbed.loading = "lazy";
+    
     youtubeEmbedContainer.appendChild(youtubeEmbed);
     
     listItem.appendChild(youtubeEmbedContainer);
@@ -122,59 +127,96 @@ async function getUserProfile(accessToken) {
 
 // Function to handle authentication response
 async function handleAuthResponse() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
+  let accessToken = sessionStorage.getItem('spotify_access_token');
 
-  if (code) {
+  if (!accessToken) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code) {
+      try {
+        // After login, hide the login section and show the loading animation
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('loadingAnimation').style.display = 'block';
+
+        accessToken = await getAccessToken(code);
+        const userProfile = await getUserProfile(accessToken);
+        const songs = await getLikedSongs(accessToken);
+        const youtubeLinks = await Promise.all(songs.map(song => searchYoutube(song.name, song.artists[0].name))); 
+
+        const userDiv = document.createElement('div');
+        userDiv.style.display = 'flex';
+        userDiv.style.alignItems = 'center';
+        userDiv.style.gap = '10px';
+
+        const userName = document.createElement('span');
+        userName.textContent = userProfile.display_name;
+        userName.style.alignSelf = 'center';
+        userDiv.appendChild(userName);
+
+        if (userProfile.imageUrl) {
+          const img = document.createElement('img');
+          img.src = userProfile.imageUrl;
+          img.alt = `${userProfile.display_name}'s profile image`;
+          img.style.height = "50px";
+          img.style.width = "50px";
+          img.style.borderRadius = "50%";
+          userDiv.prepend(img);
+        }
+
+        document.getElementById('userName').replaceWith(userDiv);
+
+        displaySongs(songs, youtubeLinks);
+
+        document.getElementById('loadingAnimation').style.display = 'none';
+        document.getElementById('authorizedSection').style.display = 'block';
+      } catch (error) {
+        console.error(`Failed to get access token, user profile, or liked songs: ${error}`);
+        document.getElementById('loadingAnimation').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'block';
+      };
+    };
+  } else {
     try {
-      // After login, hide the login section and show the loading animation
       document.getElementById('loginSection').style.display = 'none';
       document.getElementById('loadingAnimation').style.display = 'block';
-      
-      const accessToken = await getAccessToken(code);
+
       const userProfile = await getUserProfile(accessToken);
       const songs = await getLikedSongs(accessToken);
       const youtubeLinks = await Promise.all(songs.map(song => searchYoutube(song.name, song.artists[0].name))); 
 
-      // Creating a div to hold the user's name and profile image
       const userDiv = document.createElement('div');
       userDiv.style.display = 'flex';
-      userDiv.style.alignItems = 'center';  // To vertically align the image and the name
-      userDiv.style.gap = '10px';  // To create space between the image and the name
+      userDiv.style.alignItems = 'center';
+      userDiv.style.gap = '10px';
 
-      // Setting the user's name
       const userName = document.createElement('span');
       userName.textContent = userProfile.display_name;
-      userName.style.alignSelf = 'center';  // To vertically align the name with the image
+      userName.style.alignSelf = 'center';
       userDiv.appendChild(userName);
 
-      // Setting the user's profile image
       if (userProfile.imageUrl) {
         const img = document.createElement('img');
         img.src = userProfile.imageUrl;
         img.alt = `${userProfile.display_name}'s profile image`;
         img.style.height = "50px";
         img.style.width = "50px";
-        img.style.borderRadius = "50%";  // To make the image circular
-        userDiv.prepend(img);  // To put the image before the name
+        img.style.borderRadius = "50%";
+        userDiv.prepend(img);
       }
 
-      // Adding the div to the document
       document.getElementById('userName').replaceWith(userDiv);
 
       displaySongs(songs, youtubeLinks);
 
-      // Once the songs list is ready, hide the loading animation and show the authorized section
       document.getElementById('loadingAnimation').style.display = 'none';
       document.getElementById('authorizedSection').style.display = 'block';
     } catch (error) {
-      console.error(`Failed to get access token, user profile, or liked songs: ${error}`);
-      
-      // If there's an error, hide the loading animation and show the login section again
+      console.error(`Failed to get user profile or liked songs: ${error}`);
       document.getElementById('loadingAnimation').style.display = 'none';
       document.getElementById('loginSection').style.display = 'block';
     };
-  };
+  }
 };
 
 // Create an array of messages
@@ -247,7 +289,7 @@ function changeMessage() {
   index = (index + 1) % messages.length;
 }
 
-// Change the message every 1 seconds
+// Change the message every 10 seconds
 setInterval(changeMessage, 10000);
 
 
