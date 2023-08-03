@@ -295,6 +295,27 @@ function changeMessage() {
 // Change the message every 10 seconds
 setInterval(changeMessage, 10000);
 
+document.getElementById('darkModeButton').addEventListener('click', function() {
+  const body = document.body;
+  body.classList.toggle('dark-mode');
+
+  // Switch the icon and the text
+  const darkModeButton = document.getElementById('darkModeButton');
+  const isDarkMode = body.classList.contains('dark-mode');
+  if (isDarkMode) {
+    darkModeButton.innerHTML = '<i class="fas fa-sun"></i> ';
+    darkModeButton.style.color = '#fff';
+    darkModeButton.style.backgroundColor = '#232323';
+    darkModeButton.style.border = 'none';
+  } else {
+    darkModeButton.innerHTML = '<i class="fas fa-moon"></i>';
+    darkModeButton.style.color = '#000';
+    darkModeButton.style.backgroundColor = '#ece7e7';
+    darkModeButton.style.border = 'none';
+  }
+  
+});
+
 
 // Event listener to handle document ready event
 document.addEventListener('DOMContentLoaded', function() {
@@ -302,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
   logButton.addEventListener('click', redirectToSpotifyAuth);
   window.onload = handleAuthResponse;
 
-  // Add an input event listener to the search field
+  //Search input
   const searchField = document.getElementById('songSearch');
   searchField.addEventListener('input', function() {
     const query = this.value.toLowerCase();
@@ -316,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
   logoutButton.addEventListener('click', function() {
     // Clear the access token from local storage
     localStorage.removeItem('spotifyAccessToken');
-    // Reload the page
+    // Reload the page after logout.
     location.reload();
   });
 });
