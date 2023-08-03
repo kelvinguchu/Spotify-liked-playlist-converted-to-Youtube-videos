@@ -17,8 +17,8 @@ body {
   justify-content: space-between;  /* Arrange items with space in-between */
   align-items: center;  /* Align items vertically in the center */
   padding: 20px;
-  background-color: #282828;  /* Dark grey color */
-  color: #fff;  /* White text color */
+  background-color: #ece7e7;  /* Dark grey color */
+  color: #0a0a0a;  /* White text color */
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   margin:10px;
@@ -60,6 +60,8 @@ body {
 
 #loginButton {
     padding: 15px 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     font-size: 18px;
     font-weight: 600;
     background-color: #1ed760;
@@ -134,6 +136,65 @@ body {
 #logoutButton:focus {
   outline: none; /* Remove default outline */
   box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3); /* Add blue outline on focus */
+}
+
+#darkModeButton {
+  outline: none;
+  border: none;
+  font-size: 1.5em;
+  transition: transform 0.2s ease-in-out;
+}
+
+#darkModeButton:focus {
+  outline: none;
+  border: none;
+}
+
+#darkModeButton:hover {
+  transform: translateY(-3px);
+}
+
+body.dark-mode {
+  background-color: #232323;
+  color: #ffffff;
+}
+
+
+.dark-mode .navbar {
+  background-color: #232323;
+  color: #ffffff;
+  box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode #authorizedSection {
+  background-color: #232323;
+  color: #ffffff;
+}
+
+.dark-mode #loginSection {
+  background-color: #232323;
+  color: #ffffff;
+  box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode #loginSection h1,
+.dark-mode #loginSection h2 {
+  color: #ffffff;
+}
+
+.dark-mode #songSearch {
+  background-color: #232323;
+  color: #ffffff;
+}
+
+.dark-mode .card {
+  background: linear-gradient(135deg, #232323 0%, #232323 100%);
+  box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode #darkModeButton {
+  background-color: #ffffff;
+  color: #000000;
 }
 
 
