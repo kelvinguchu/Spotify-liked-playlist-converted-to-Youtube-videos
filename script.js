@@ -389,7 +389,7 @@ function applyInitialTheme() {
 
 // Event listener to handle document ready event
 document.addEventListener('DOMContentLoaded', function() {
-  applyInitialTheme();
+  setTimeout(applyInitialTheme, 100);
 
   const logButton = document.getElementById('loginButton');
   logButton.addEventListener('click', redirectToSpotifyAuth);
