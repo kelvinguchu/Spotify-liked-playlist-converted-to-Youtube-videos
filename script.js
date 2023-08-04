@@ -236,6 +236,15 @@ async function handleAuthResponse() {
   }
 };
 
+// Function to shuffle an array using Fisher-Yates algorithm
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 // Array of messages
 const messages = [
     'Good Taste 😍🤤',
@@ -289,6 +298,8 @@ const messages = [
     'EDM Energy 🎧💥',
     'Folklore Feel 🎻🌳'
 ];
+
+shuffleArray(messages);
 
 let index = 0;
 
