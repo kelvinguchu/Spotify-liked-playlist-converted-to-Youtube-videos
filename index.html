@@ -7,35 +7,43 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
+    <!--Login section-->
     <section id="loginSection">
       <h1>Youtubify</h1>
       <h2>Sp<i class="fab fa-spotify"></i>tify</i> <br>to <br>YouT<i class="fab fa-youtube"></i>be</i></h2>
       <button id="loginButton">Login with Spotify</button>
-      <button id="darkModeButton"><i class="fas fa-moon"></i> </button>
+      <button id="darkModeButtonLogin"><i class="fas fa-moon"></i> </button>
     </section>
+
+    <!--Loading animation justbefore the authorized section and videos are rendered-->
     <div id="loadingAnimation" style="display: none;">
-      <!-- Place your loading animation here -->
+      <!-- Loading animation -->
       <div class="loader"></div>
     </div>  
+
+    <!--Authorized section - where the user is redirected to after a successful login via Spotify-->
     <section id="authorizedSection" style="display: none;">
       <div class="navbar">
+
+        <!-- User name and avatar -->
         <h2><span id="userName"></span></h2>
+
+        <!-- Messages to the user to make the website a bit lively -->
         <p>Hey you🙈🙈</p>
-        <button id="darkModeButton"><i class="fas fa-moon"></i> </button>
+        <button id="darkModeButtonAuthorized"><i class="fas fa-moon"></i> </button>
+
+        <!-- Logout button to log the user out and clear the local storage-->
         <button id="logoutButton">Logout</button>
-        <!-- Add the following code below the logout button -->
       </div>
     </div>
-    <!-- Add the search input field here -->
+
+    <!-- Search bar to help the user search for videos much easily -->
     <input id="songSearch" type="text" placeholder="Search for a song">
+
     <ul id="song-list">
       <!-- Songs will be populated here -->
     </ul>
-      <!-- Data Scraping and other sections go here -->
-      <ul id="song-list">
-        <!-- Songs will be populated here -->
-      </ul>
+
     </section>
   </main>
   <script src="script.js"></script>
