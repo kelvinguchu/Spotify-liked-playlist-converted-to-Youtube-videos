@@ -9,7 +9,7 @@
 // Constants for Spotify and YouTube APIs
 const clientId = '473e1292e9714be2b9defd20feebd4eb';
 const clientSecret = 'b58bd34301a9493dbba1a1e36fcd4fe3';
-const redirectUri = 'http://127.0.0.1:5500/index.html';
+const redirectUri = 'https://you-tubify.vercel.app/';
 const apiKey = 'AIzaSyDeby8kdPYzUQawOqFiNRp_UJ34Zmvaag8';
 
 // Function to redirect to Spotify Authentication page
