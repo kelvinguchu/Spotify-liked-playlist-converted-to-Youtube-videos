@@ -47,22 +47,25 @@ body {
 }
 
 #loginSection {
-    background-color: #f0f0f0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-    border: double 3px transparent;
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column; /* This ensures that the child elements stack vertically */
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  border: double 3px transparent;
 }
 
+
 #loginButton {
+    width: 100%;
+    margin: 20px 0;
     padding: 15px 30px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -139,6 +142,12 @@ body {
   outline: none;
   box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
 }
+
+#darkModeButtonLogin{
+  display: block;
+  margin: auto;
+}
+
 
 /* Style for dark mode and dark mode button */
 #darkModeButtonLogin,
