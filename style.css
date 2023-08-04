@@ -1,5 +1,8 @@
+/* Import 'Poppins' font from Google Fonts*/
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
+
+/* Reset the default padding and margin */
 * {
   margin: 0;
   padding: 0;
@@ -14,36 +17,37 @@ body {
 /* Style for navbar */
 .navbar {
   display: flex;
-  justify-content: space-between;  /* Arrange items with space in-between */
-  align-items: center;  /* Align items vertically in the center */
+  justify-content: space-between;
+  align-items: center;
   padding: 20px;
-  background-color: #ece7e7;  /* Dark grey color */
-  color: #0a0a0a;  /* White text color */
+  background-color: #ece7e7;
+  color: #0a0a0a;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  margin:10px;
 }
 
 /* Style for h2 in navbar */
 .navbar h2 {
-  margin: 0;  /* Remove default margins */
-  font-size: 1.5rem;  /* Make the font size larger */
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 /* Style for span (username) in h2 */
 .navbar h2 span {
-  color: #1DB954;  /* Spotify Green */
-  font-weight: bold;  /* Bold font weight */
+  color: #1DB954;
+  font-weight: bold;
 }
 
 /* Style for p in navbar */
 .navbar p {
-  margin: 0;  /* Remove default margins */
+  width: 300px;
+  margin: 0;
+  margin-right: 10px;
+  transition: opacity 1s ease-in-out;
 }
 
-
 #loginSection {
-    background-color: #f0f0f0; /* Light grey color */
+    background-color: #f0f0f0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -110,39 +114,46 @@ body {
   width: 10%;
   font-size: 14px;
   font-weight: 500;
-  color: #fff; /* Text color, change it to match your text color */
-  background-color: #282828; /* Navbar background color */
-  border: 1px solid transparent; /* Transparent border to create space for the gradient */
-  border-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff); /* Gradient border */
-  border-image-slice: 1; /* Ensure the entire border is covered by the gradient */
+  color: #fff;
+  border: 1px solid transparent;
+  border-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff);
+  border-image-slice: 1;
+  border-radius: 3px;
   cursor: pointer;
-  box-shadow: 0 1px 0 rgba(27, 31, 35, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.25); /* Shadows for depth */
-  transition: .2s cubic-bezier(.3,0,.5,1); /* Animation for hover state */
-  text-decoration: none; /* Remove underline */
-  background-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff); /* Gradient background (for text) */
+  box-shadow: 0 1px 0 rgba(27, 31, 35, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  transition: .2s cubic-bezier(.3,0,.5,1);
+  text-decoration: none;
+  background-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff);
   background-size: 200% 200%;
   background-position: 0 100%;
-  color: transparent; /* Hide text for now */
-  -webkit-background-clip: text; /* Clip text with gradient */
+  color: transparent;
+  -webkit-background-clip: text;
   background-clip: text;
 }
 
 #logoutButton:hover {
-  background-position: 100% 100%; /* Move gradient to the end on hover */
-  color: #fff; /* Show text on hover */
-  border: 3px solid transparent; /* Ensure the border doesn't change color on hover */
+  transform: translateY(-3px);
 }
 
 #logoutButton:focus {
-  outline: none; /* Remove default outline */
-  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3); /* Add blue outline on focus */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
 }
 
-#darkModeButton {
+/* Style for dark mode and dark mode button */
+#darkModeButtonLogin,
+#darkModeButtonAuthorized {
   outline: none;
   border: none;
   font-size: 1.5em;
   transition: transform 0.2s ease-in-out;
+  color: '#000'; 
+  background-color: '#ece7e7'; 
+}
+
+
+.navbar #darkModeButton{
+  margin-left: 10%;
 }
 
 #darkModeButton:focus {
@@ -155,26 +166,26 @@ body {
 }
 
 body.dark-mode {
-  background-color: #232323;
+  background-color: rgba(4, 4, 4);
   color: #ffffff;
 }
 
 
 .dark-mode .navbar {
-  background-color: #232323;
+  background-color: rgba(4, 4, 4);
   color: #ffffff;
-  box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.2);
+  box-shadow: 0px 5px 5px 0px rgba(30, 215, 96, 0.1);
 }
 
 .dark-mode #authorizedSection {
-  background-color: #232323;
+  background-color: rgba(4, 4, 4);
   color: #ffffff;
 }
 
 .dark-mode #loginSection {
-  background-color: #232323;
+  background-color: rgba(4, 4, 4);
   color: #ffffff;
-  box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.2);
+  border: 1px solid #1ed760;
 }
 
 .dark-mode #loginSection h1,
@@ -183,27 +194,41 @@ body.dark-mode {
 }
 
 .dark-mode #songSearch {
-  background-color: #232323;
+  background-color: rgba(4, 4, 4);
   color: #ffffff;
 }
 
 .dark-mode .card {
-  background: linear-gradient(135deg, #232323 0%, #232323 100%);
-  box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #232323 0%, rgba(4, 4, 4) 100%);
+  border: 1px solid #1ed760;
 }
+
 
 .dark-mode #darkModeButton {
   background-color: #ffffff;
   color: #000000;
 }
 
+.dark-mode .loader-container {
+  background-color: rgba(0, 0, 0, 0.8);
+}
 
+.dark-mode .loader {
+  border: 8px solid rgba(4, 4, 4);
+  border-top: 8px solid #ffffff;
+}
+
+.dark-mode .loader::before {
+  color: #ffffff;
+}
+
+/* Style for search bar */
 #songSearch {
   width: 80%;
   padding: 10px;
-  border: none;
+  border: 1px solid #1ed760;;
   border-radius: 15px;
-  margin: 20px 10px;
+  margin: 20px 10%;
   font-size: 16px;
   background-color: #f0f0f0;
   transition: all 0.3s ease-in-out;
@@ -225,29 +250,29 @@ body.dark-mode {
 
 #song-list {
   display: flex;
-  align-items: flex-start; /* Align the items at the top */
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   list-style: none;
-  gap: 0.8rem; /* Space between the cards */
+  gap: 0.8rem;
   margin: 10px;
 }
 
 .card {
-  width: 310px; /* Set a fixed width */
-  height: 300px; /* Set a fixed height */
+  width: 310px;
+  height: 300px;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  overflow: hidden; /* To ensure that the border-radius applies to the video as well */
+  overflow: hidden;
   padding: 3px 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease-in-out; /* For smooth hover effect */
-  background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); /* Color gradient background */
+  transition: all 0.3s ease-in-out;
+  background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
 }
 
 .card_video {
-  flex-grow: 1; /* Allows the video to take up the remaining space */
+  flex-grow: 1;
   position: relative;
   width: 100%;
 }
@@ -262,13 +287,13 @@ body.dark-mode {
 
 .card_info {
   padding: 5px;
-  height: 40px; /* Fixed height to ensure that it's the same on all cards */
-  box-sizing: border-box; /* To include padding in the height */
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .card:hover {
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
-  transform: scale(1.05); /* Slightly increase size on hover */
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
 }
 
 #song-list li:hover {
@@ -282,14 +307,13 @@ body.dark-mode {
 }
 
 #loadingAnimation {
-  display: none; /* This is set to block in JavaScript when needed */
-  position: fixed; /* Fixed positioning */
-  top: 50%; /* Half from the top */
-  left: 50%; /* Half from the left */
-  transform: translate(-50%, -50%); /* Pull the element back exactly half its width and height */
-  z-index: 9999; /* Optional: this makes sure the loading animation is above all other elements */
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
 }
-
 
 .loader-container {
   display: flex;
@@ -300,8 +324,8 @@ body.dark-mode {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Optional: dark overlay */
-  z-index: 9999; /* To ensure loader is on top */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
 }
 
 .loader {
@@ -315,7 +339,7 @@ body.dark-mode {
 }
 
 .loader::before {
-  content: "♫"; /* Or "♪", or even an SVG */
+  content: "♫"; 
   position: absolute;
   top: 50%;
   left: 50%;
@@ -335,11 +359,6 @@ body.dark-mode {
   100% { transform: translate(-50%, -50%) scale(1.1); }
 }
 
-.navbar p {
-  margin-right: 10px;
-  transition: opacity 1s ease-in-out;
-}
-
 
 
 @media (max-width: 600px) {
@@ -357,23 +376,22 @@ body.dark-mode {
     margin-left: 0;
   }  
 
-      /* Style for h2 in navbar */
-    .navbar h2 {
-      margin: 0;  /* Remove default margins */
-      font-size: 16px;  /* Make the font size larger */
-    }
+  .navbar h2 {
+    margin: 0;
+    font-size: 16px;
+  }
 
-    /* Style for span (username) in h2 */
-    .navbar h2 span {
-      font-size: 16px;
-    }
+  /* Style for span (username) in h2 */
+  .navbar h2 span {
+    font-size: 16px;
+  }
 
-    .card {
-      width: 98%; /* Set a fixed width */
-      height: 300px; /* Set a fixed height */
-      margin: 5px;
-      padding: 2px;
-    }
+  .card {
+    width: 98%; 
+    height: 300px;
+    margin: 5px;
+    padding: 2px;
+  }
     
   .card_info {
     font-size: 14px;
@@ -381,8 +399,8 @@ body.dark-mode {
   }
 
   #userName img {
-    height: 20px;
-    width: 20px;
+    height: 10px;
+    width: 10px;
   }
 
   .navbar p {
@@ -399,5 +417,16 @@ body.dark-mode {
     margin: 5px 5px;
     font-size: 16px;
     border:1px solid #1ed760;
+  }
+
+  #darkModeButtonLogin,
+  #darkModeButtonAuthorized {
+  font-size: 0.9em;
+  }
+
+  #logoutButton {
+    padding: 5px 5px;
+    width: 20%;
+    font-size: 14px;
   }
 }
