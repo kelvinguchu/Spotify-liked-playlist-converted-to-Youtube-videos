@@ -19,6 +19,30 @@ function redirectToSpotifyAuth() {
   window.location = authUrl;
 };
 
+//Function to set cookies
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+      let date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+//Function to get cookies
+function getCookie(name) {
+  let nameEQ = name + "=";
+  let ca = document.cookie.split(';');
+  for(let i=0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+
 // Function to retrieve access token from Spotify
 async function getAccessToken(code) {
   // Setting the request for the access token
@@ -40,6 +64,7 @@ async function getAccessToken(code) {
     throw new Error(`HTTP error! status: ${response.status}`);
   } else {
     const data = await response.json();
+    setCookie('spotify_access_token', data.access_token, 1);  // store token in cookie for 1 day
     sessionStorage.setItem('spotify_access_token', data.access_token);
     return data.access_token;
   };
@@ -67,7 +92,7 @@ async function getLikedSongs(accessToken, url = 'https://api.spotify.com/v1/me/t
 // Function to search YouTube and return first video ID
 async function searchYoutube(songName, artistName) {
   const cacheKey = `${songName}-${artistName}`;
-  const cachedResult = localStorage.getItem(cacheKey);
+  const cachedResult = getCookie(cacheKey) || localStorage.getItem(cacheKey);
 
   // If result is cached, return it
   if (cachedResult) {
@@ -80,10 +105,8 @@ async function searchYoutube(songName, artistName) {
   const data = await response.json();
 
   const videoId = data.items[0].id.videoId;
-
-  // Cache the result in local storage
+  setCookie(cacheKey, videoId, 1);  // store videoId in cookie for 1 day
   localStorage.setItem(cacheKey, videoId);
-
   return videoId;
 };
 
@@ -143,7 +166,7 @@ async function getUserProfile(accessToken) {
 
 // Function to handle authentication response
 async function handleAuthResponse() {
-  let accessToken = sessionStorage.getItem('spotify_access_token');
+  let accessToken = sessionStorage.getItem('spotify_access_token') || getCookie('spotify_access_token');
 
   // If there is no access token in the session storage, try to get one from the URL
   if (!accessToken) {
@@ -347,6 +370,7 @@ function toggleDarkMode() {
   }
 }
 
+
 // Function to apply the initial theme
 function applyInitialTheme() {
   const storedTheme = localStorage.getItem('theme');
@@ -356,7 +380,6 @@ function applyInitialTheme() {
 
   const isDarkMode = document.body.classList.contains('dark-mode');
   const darkModeButtonLogin = document.getElementById('darkModeButtonLogin');
-  const darkModeButtonAuthorized = document.getElementById('darkModeButtonAuthorized');
 
   // Initialize the button style
   if (isDarkMode) {
@@ -364,32 +387,17 @@ function applyInitialTheme() {
     darkModeButtonLogin.style.color = '#fff';
     darkModeButtonLogin.style.backgroundColor = 'rgba(4, 4, 4)';
     darkModeButtonLogin.style.border = 'none';
-    
-    darkModeButtonAuthorized.innerHTML = '<i class="fas fa-sun"></i> ';
-    darkModeButtonAuthorized.style.color = '#fff';
-    darkModeButtonAuthorized.style.backgroundColor = 'rgba(4, 4, 4)';
-    darkModeButtonAuthorized.style.border = 'none';
   } else {
     darkModeButtonLogin.innerHTML = '<i class="fas fa-moon"></i>';
     darkModeButtonLogin.style.color = '#000';
     darkModeButtonLogin.style.backgroundColor = '#ece7e7';
     darkModeButtonLogin.style.border = 'none';
-    
-    darkModeButtonAuthorized.innerHTML = '<i class="fas fa-moon"></i>';
-    darkModeButtonAuthorized.style.color = '#000';
-    darkModeButtonAuthorized.style.backgroundColor = '#ece7e7';
-    darkModeButtonLogin.style.border = 'none';
-    
-    darkModeButtonAuthorized.innerHTML = '<i class="fas fa-moon"></i>';
-    darkModeButtonAuthorized.style.color = '#000';
-    darkModeButtonAuthorized.style.backgroundColor = '#ece7e7';
-    darkModeButtonAuthorized.style.border = 'none';
   }
 }
 
 // Event listener to handle document ready event
 document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(applyInitialTheme, 100);
+  applyInitialTheme();
 
   const logButton = document.getElementById('loginButton');
   logButton.addEventListener('click', redirectToSpotifyAuth);
@@ -414,4 +422,3 @@ document.addEventListener('DOMContentLoaded', function() {
     location.reload();
   });
 });
-
