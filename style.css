@@ -47,9 +47,9 @@ body {
 }
 
 #loginSection {
-  background-color: #f0f0f0;
+  background-color:#ece7e7;
   display: flex;
-  flex-direction: column; /* This ensures that the child elements stack vertically */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: fixed;
@@ -161,16 +161,18 @@ body {
 }
 
 
-.navbar #darkModeButton{
+#darkModeButtonAuthorized{
   margin-left: 10%;
 }
 
-#darkModeButton:focus {
+#darkModeButtonLogin,
+#darkModeButtonAuthorized:focus {
   outline: none;
   border: none;
 }
 
-#darkModeButton:hover {
+#darkModeButtonLogin:hover,
+#darkModeButtonAuthorized:hover {
   transform: translateY(-3px);
 }
 
