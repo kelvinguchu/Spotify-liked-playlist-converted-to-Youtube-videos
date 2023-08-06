@@ -143,6 +143,12 @@ body {
   box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
 }
 
+#top {
+  position: fixed;
+  bottom: 2%;
+  right: 2%;
+}
+
 #darkModeButtonLogin{
   display: block;
   margin: auto;
@@ -233,11 +239,23 @@ body.dark-mode {
   color: #ffffff;
 }
 
+.dark-mode #search {
+  background-color: rgba(4, 4, 4);
+}
+
+#search {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0; 
+  z-index: 1000;
+  background-color: #ece7e7;
+}
+
 /* Style for search bar */
 #songSearch {
   width: 80%;
   padding: 10px;
-  border: 1px solid #1ed760;;
+  border: 1px solid #1ed760;
   border-radius: 15px;
   margin: 20px 10%;
   font-size: 16px;
@@ -246,6 +264,7 @@ body.dark-mode {
   outline: none;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 
 #songSearch:focus {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
