@@ -9,7 +9,7 @@
 // Constants for Spotify and YouTube APIs
 const clientId = '473e1292e9714be2b9defd20feebd4eb';
 const clientSecret = 'b58bd34301a9493dbba1a1e36fcd4fe3';
-const redirectUri = 'https://you-tubify.vercel.app/';
+const redirectUri = 'http://127.0.0.1:5500/index.html';
 const apiKey = 'AIzaSyDeby8kdPYzUQawOqFiNRp_UJ34Zmvaag8';
 
 // Function to redirect to Spotify Authentication page
@@ -168,56 +168,25 @@ async function getUserProfile(accessToken) {
 async function handleAuthResponse() {
   let accessToken = sessionStorage.getItem('spotify_access_token') || getCookie('spotify_access_token');
 
-  // If there is no access token in the session storage, try to get one from the URL
-  if (!accessToken) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
 
-    if (code) {
-      try {
-        // After login, hide the login section and show the loading animation
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('loadingAnimation').style.display = 'block';
+  try {
+      // If there is no access token in the session storage or cookies, but there is a code in the URL, attempt to exchange it for an access token
+      if (!accessToken && code) {
+          accessToken = await getAccessToken(code);
 
-        accessToken = await getAccessToken(code);
-        const userProfile = await getUserProfile(accessToken);
-        const songs = await getLikedSongs(accessToken);
-        const youtubeLinks = await Promise.all(songs.map(song => searchYoutube(song.name, song.artists[0].name)));
+          // If still no access token after the exchange attempt, throw an error
+          if (!accessToken) {
+              throw new Error('Failed to exchange code for access token.');
+          }
+      } else if (!accessToken) {
+          // No token and no code in URL, redirect to Spotify authentication
+          redirectToSpotifyAuth();
+          return;
+      }
 
-        const userDiv = document.createElement('div');
-        userDiv.style.display = 'flex';
-        userDiv.style.alignItems = 'center';
-        userDiv.style.gap = '10px';
-
-        const userName = document.createElement('span');
-        userName.textContent = userProfile.display_name;
-        userName.style.alignSelf = 'center';
-        userDiv.appendChild(userName);
-
-        if (userProfile.imageUrl) {
-          const img = document.createElement('img');
-          img.src = userProfile.imageUrl;
-          img.alt = `${userProfile.display_name}'s profile image`;
-          img.style.height = "50px";
-          img.style.width = "50px";
-          img.style.borderRadius = "50%";
-          userDiv.prepend(img);
-        }
-
-        document.getElementById('userName').replaceWith(userDiv);
-
-        displaySongs(songs, youtubeLinks);
-
-        document.getElementById('loadingAnimation').style.display = 'none';
-        document.getElementById('authorizedSection').style.display = 'block';
-      } catch (error) {
-        console.error(`Failed to get access token, user profile, or liked songs: ${error}`);
-        document.getElementById('loadingAnimation').style.display = 'none';
-        document.getElementById('loginSection').style.display = 'block';
-      };
-    };
-  } else {
-    try {
+      // Show loading animation
       document.getElementById('loginSection').style.display = 'none';
       document.getElementById('loadingAnimation').style.display = 'block';
 
@@ -225,39 +194,50 @@ async function handleAuthResponse() {
       const songs = await getLikedSongs(accessToken);
       const youtubeLinks = await Promise.all(songs.map(song => searchYoutube(song.name, song.artists[0].name)));
 
-      const userDiv = document.createElement('div');
-      userDiv.style.display = 'flex';
-      userDiv.style.alignItems = 'center';
-      userDiv.style.gap = '10px';
-
-      const userName = document.createElement('span');
-      userName.textContent = userProfile.display_name;
-      userName.style.alignSelf = 'center';
-      userDiv.appendChild(userName);
-
-      if (userProfile.imageUrl) {
-        const img = document.createElement('img');
-        img.src = userProfile.imageUrl;
-        img.alt = `${userProfile.display_name}'s profile image`;
-        img.style.height = "50px";
-        img.style.width = "50px";
-        img.style.borderRadius = "50%";
-        userDiv.prepend(img);
-      }
-
-      document.getElementById('userName').replaceWith(userDiv);
-
+      displayUserProfile(userProfile);
       displaySongs(songs, youtubeLinks);
 
       document.getElementById('loadingAnimation').style.display = 'none';
       document.getElementById('authorizedSection').style.display = 'block';
-    } catch (error) {
-      console.error(`Failed to get user profile or liked songs: ${error}`);
+
+  } catch (error) {
+      console.error(`Error processing authentication or fetching data: ${error}`);
+
+      // Check for token-related error and redirect to Spotify auth if needed
+      if (error.message.includes('401') && !code) {
+          redirectToSpotifyAuth();
+          return;
+      }
+
       document.getElementById('loadingAnimation').style.display = 'none';
       document.getElementById('loginSection').style.display = 'block';
-    };
-  }
+  };
 };
+
+function displayUserProfile(userProfile) {
+  const userDiv = document.createElement('div');
+  userDiv.style.display = 'flex';
+  userDiv.style.alignItems = 'center';
+  userDiv.style.gap = '10px';
+
+  const userName = document.createElement('span');
+  userName.textContent = userProfile.display_name;
+  userName.style.alignSelf = 'center';
+  userDiv.appendChild(userName);
+
+  if (userProfile.imageUrl) {
+      const img = document.createElement('img');
+      img.src = userProfile.imageUrl;
+      img.alt = `${userProfile.display_name}'s profile image`;
+      img.style.height = "50px";
+      img.style.width = "50px";
+      img.style.borderRadius = "50%";
+      userDiv.prepend(img);
+  };
+
+  document.getElementById('userName').replaceWith(userDiv);
+};
+
 
 // Function to shuffle an array using Fisher-Yates algorithm
 function shuffleArray(array) {
@@ -387,11 +367,26 @@ function applyInitialTheme() {
     darkModeButtonLogin.style.color = '#fff';
     darkModeButtonLogin.style.backgroundColor = 'rgba(4, 4, 4)';
     darkModeButtonLogin.style.border = 'none';
+    
+    darkModeButtonAuthorized.innerHTML = '<i class="fas fa-sun"></i> ';
+    darkModeButtonAuthorized.style.color = '#fff';
+    darkModeButtonAuthorized.style.backgroundColor = 'rgba(4, 4, 4)';
+    darkModeButtonAuthorized.style.border = 'none';
   } else {
     darkModeButtonLogin.innerHTML = '<i class="fas fa-moon"></i>';
     darkModeButtonLogin.style.color = '#000';
     darkModeButtonLogin.style.backgroundColor = '#ece7e7';
     darkModeButtonLogin.style.border = 'none';
+    
+    darkModeButtonAuthorized.innerHTML = '<i class="fas fa-moon"></i>';
+    darkModeButtonAuthorized.style.color = '#000';
+    darkModeButtonAuthorized.style.backgroundColor = '#ece7e7';
+    darkModeButtonLogin.style.border = 'none';
+    
+    darkModeButtonAuthorized.innerHTML = '<i class="fas fa-moon"></i>';
+    darkModeButtonAuthorized.style.color = '#000';
+    darkModeButtonAuthorized.style.backgroundColor = '#ece7e7';
+    darkModeButtonAuthorized.style.border = 'none';
   }
 }
 
