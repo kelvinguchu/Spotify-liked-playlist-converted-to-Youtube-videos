@@ -16,6 +16,7 @@ const apiKey = 'AIzaSyDeby8kdPYzUQawOqFiNRp_UJ34Zmvaag8';
 function redirectToSpotifyAuth() {
   const scopes = encodeURIComponent('user-library-read');
   const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${scopes}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+  sessionStorage.setItem('attempting-auth', 'true');
   window.location = authUrl;
 };
 
@@ -394,8 +395,19 @@ function applyInitialTheme() {
 document.addEventListener('DOMContentLoaded', function() {
   applyInitialTheme();
 
-  const logButton = document.getElementById('loginButton');
-  logButton.addEventListener('click', redirectToSpotifyAuth);
+  document.getElementById('loginButton').addEventListener('click', function() {
+    const accessToken = sessionStorage.getItem('spotify_access_token') || getCookie('spotify_access_token');
+    const code = new URLSearchParams(window.location.search).get('code');
+    const attemptingAuth = sessionStorage.getItem('attempting-auth');
+
+    if (!accessToken && code && attemptingAuth) {
+        handleAuthResponse();
+        sessionStorage.removeItem('attempting-auth');
+    } else if (!accessToken) {
+        redirectToSpotifyAuth();
+    }
+});
+
   window.onload = handleAuthResponse;
 
   //Search input
