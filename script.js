@@ -408,8 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-  window.onload = handleAuthResponse;
-
   //Search input
   const searchField = document.getElementById('songSearch');
   searchField.addEventListener('input', function() {
