@@ -395,17 +395,26 @@ function applyInitialTheme() {
 document.addEventListener('DOMContentLoaded', function() {
   applyInitialTheme();
 
-  document.getElementById('loginButton').addEventListener('click', function() {
-    const accessToken = sessionStorage.getItem('spotify_access_token') || getCookie('spotify_access_token');
-    const code = new URLSearchParams(window.location.search).get('code');
-    const attemptingAuth = sessionStorage.getItem('attempting-auth');
+// Event listener to handle document ready event
+document.addEventListener('DOMContentLoaded', function() {
+  applyInitialTheme();
 
-    if (!accessToken && code && attemptingAuth) {
-        handleAuthResponse();
-        sessionStorage.removeItem('attempting-auth');
-    } else if (!accessToken) {
+  const accessToken = sessionStorage.getItem('spotify_access_token') || getCookie('spotify_access_token');
+  const code = new URLSearchParams(window.location.search).get('code');
+  const attemptingAuth = sessionStorage.getItem('attempting-auth');
+
+  // If there's a code in the URL and we were attempting to authenticate, handle the response right away
+  if (code && attemptingAuth) {
+    handleAuthResponse();
+    sessionStorage.removeItem('attempting-auth');
+  }
+
+  document.getElementById('loginButton').addEventListener('click', function() {
+    // If no access token and no code in URL, redirect to Spotify authentication
+    if (!accessToken && !code) {
         redirectToSpotifyAuth();
     }
+  });
 });
 
   //Search input
