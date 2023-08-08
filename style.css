@@ -112,26 +112,18 @@ body {
 }
 
 #logoutButton {
-  display: inline-block;
-  padding: 5px 16px;
-  width: 10%;
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  border: 1px solid transparent;
-  border-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff);
-  border-image-slice: 1;
-  border-radius: 3px;
-  cursor: pointer;
-  box-shadow: 0 1px 0 rgba(27, 31, 35, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.25);
-  transition: .2s cubic-bezier(.3,0,.5,1);
-  text-decoration: none;
-  background-image: linear-gradient(to right, #007bff, #6c757d, #17a2b8, #28a745, #ffc107, #dc3545, #f39c12, #007bff);
-  background-size: 200% 200%;
-  background-position: 0 100%;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #1ed760;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+    outline: none;
+    display: inline-block;
 }
 
 #logoutButton:hover {
@@ -143,11 +135,41 @@ body {
   box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
 }
 
-#top {
-  position: fixed;
-  bottom: 2%;
-  right: 2%;
+/* Container for pagination buttons */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px; /* Adjust this value as needed for vertical spacing */
 }
+
+/* Style for pagination buttons (Next and Previous) */
+#prevButton, #nextButton {
+  margin: 0 50px 20px 50px; /* This gives each button a margin of 50px on left and right, summing up to 100px in total between them */
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #1ed760;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  outline: none;
+  display: inline-block;
+}
+
+#prevButton:disabled, #nextButton:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
+#prevButton:hover, #nextButton:hover {
+  background-color: #1db954;
+  transform: translateY(-3px);
+}
+
 
 #darkModeButtonLogin{
   display: block;
@@ -166,6 +188,19 @@ body {
   background-color: '#ece7e7'; 
 }
 
+.dark-mode #logoutButton {
+  color: #000;
+}
+
+.dark-mode #prevButton, .dark-mode #nextButton {
+  background-color: #1DB954;
+  color: #000;
+}
+
+.dark-mode #prevButton:hover, .dark-mode #nextButton:hover {
+  background-color: #1ed760;
+  color: #000;
+}
 
 #darkModeButtonAuthorized{
   margin-left: 10%;
@@ -265,12 +300,6 @@ body.dark-mode {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-
-#songSearch:focus {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-
 #songSection {
     display: flex;
     align-items: center;
@@ -278,6 +307,7 @@ body.dark-mode {
     flex-wrap: wrap;
 }
 
+/* Existing style for song list */
 #song-list {
   display: flex;
   align-items: flex-start;
@@ -447,6 +477,10 @@ body.dark-mode {
     margin: 5px 5px;
     font-size: 16px;
     border:1px solid #1ed760;
+  }
+
+  #prevButton, #nextButton {
+    margin: 0 10px 20px 10px;
   }
 
   #logoutButton {
