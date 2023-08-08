@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <main>
     <!--Login section-->
     <section id="loginSection">
       <h1>Youtubify</h1>
@@ -37,13 +38,18 @@
       </div>
     </div>
 
-    <!-- Search bar to help the user search for videos in the playlist -->
+    <div id="search">
+          <!-- Search bar to help the user search for videos in the playlist -->
     <input id="songSearch" type="text" placeholder="Search for a song">
-
+    </div>
     <ul id="song-list">
       <!-- Songs will be populated here -->
     </ul>
 
+    <div class="pagination-container"> 
+        <button id="prevButton" disabled>Previous</button>
+        <button id="nextButton" disabled>Next</button>
+    </div>
     </section>
   </main>
   <script src="script.js"></script>
