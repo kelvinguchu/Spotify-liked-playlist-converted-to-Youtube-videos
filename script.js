@@ -11,6 +11,7 @@ const clientId = '473e1292e9714be2b9defd20feebd4eb';
 const clientSecret = 'b58bd34301a9493dbba1a1e36fcd4fe3';
 const redirectUri = 'https://you-tubify.vercel.app/';
 const apiKey = 'AIzaSyDeby8kdPYzUQawOqFiNRp_UJ34Zmvaag8';
+let allSongs = [];
 
 // Function to redirect to Spotify Authentication page
 function redirectToSpotifyAuth() {
@@ -20,80 +21,60 @@ function redirectToSpotifyAuth() {
   window.location = authUrl;
 };
 
-//Function to set cookies
-function setCookie(name, value, days) {
-  let expires = "";
-  if (days) {
-      let date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      expires = "; expires=" + date.toUTCString();
-  }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/";
-}
-
-//Function to get cookies
-function getCookie(name) {
-  let nameEQ = name + "=";
-  let ca = document.cookie.split(';');
-  for(let i=0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
-
 // Function to retrieve access token from Spotify
 async function getAccessToken(code) {
-  // Setting the request for the access token
   const response = await fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`)
-    },
-    body: new URLSearchParams({
-      'grant_type': 'authorization_code',
-      'code': code,
-      'redirect_uri': redirectUri
-    })
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`)
+      },
+      body: new URLSearchParams({
+          'grant_type': 'authorization_code',
+          'code': code,
+          'redirect_uri': redirectUri
+      })
   });
 
-  // Checking if the response is successful
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
   } else {
-    const data = await response.json();
-    setCookie('spotify_access_token', data.access_token, 1);  // store token in cookie for 1 day
-    sessionStorage.setItem('spotify_access_token', data.access_token);
-    return data.access_token;
+      const data = await response.json();
+      const expiresIn = data.expires_in; // This gives the number of seconds until the token expires
+      const expiryTime = new Date().getTime() + expiresIn * 1000; // Convert to milliseconds and add to current time
+      sessionStorage.setItem('spotify_access_token_expiry', expiryTime);
+      sessionStorage.setItem('spotify_access_token', data.access_token);
+      return data.access_token;
   };
-};
+}
+
 
 // Function to retrieve liked songs from Spotify
+let nextPageUrl = null;
+let prevPageUrl = null;
+
 async function getLikedSongs(accessToken, url = 'https://api.spotify.com/v1/me/tracks?limit=50') {
-  const response = await fetch(url, {
-    headers: { 'Authorization': `Bearer ${accessToken}` }
-  });
+    const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  let tracks = data.items.map(item => item.track);
+    let tracks = data.items.map(item => item.track);
 
-  // If there is a next page of results, fetch it and concatenate the results
-  if (data.next) {
-    const nextTracks = await getLikedSongs(accessToken, data.next);
-    tracks = tracks.concat(nextTracks);
-  };
+    // Store the next and previous URLs for pagination
+    nextPageUrl = data.next;
+    prevPageUrl = data.previous;
 
-  return tracks;
+    return tracks;
 };
+
+
 
 // Function to search YouTube and return first video ID
 async function searchYoutube(songName, artistName) {
   const cacheKey = `${songName}-${artistName}`;
-  const cachedResult = getCookie(cacheKey) || localStorage.getItem(cacheKey);
+  const cachedResult = localStorage.getItem(cacheKey);
 
   // If result is cached, return it
   if (cachedResult) {
@@ -106,13 +87,12 @@ async function searchYoutube(songName, artistName) {
   const data = await response.json();
 
   const videoId = data.items[0].id.videoId;
-  setCookie(cacheKey, videoId, 1);  // store videoId in cookie for 1 day
   localStorage.setItem(cacheKey, videoId);
   return videoId;
 };
 
 // Function to display songs and their corresponding YouTube links on webpage
-function displaySongs(songs, youtubeLinks, viewCounts) {
+function displaySongs(songs, youtubeLinks) {
   const list = document.getElementById('song-list');
 
   songs.forEach((song, i) => {
@@ -166,54 +146,106 @@ async function getUserProfile(accessToken) {
 };
 
 // Function to handle authentication response
+const SONGS_PER_PAGE = 12; // Number of songs displayed per page. Adjust as needed.
+let currentPage = 0; // Start from the first page
+let pages = []; // Will contain the paginated songs
+
 async function handleAuthResponse() {
-  let accessToken = sessionStorage.getItem('spotify_access_token') || getCookie('spotify_access_token');
+    let accessToken = sessionStorage.getItem('spotify_access_token');
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
 
-  try {
-      // If there is no access token in the session storage or cookies, but there is a code in the URL, attempt to exchange it for an access token
-      if (!accessToken && code) {
-          accessToken = await getAccessToken(code);
+    try {
+        // If there is no access token in the session storage or cookies, but there is a code in the URL, attempt to exchange it for an access token
+        if (!accessToken && code) {
+            accessToken = await getAccessToken(code);
 
-          // If still no access token after the exchange attempt, throw an error
-          if (!accessToken) {
-              throw new Error('Failed to exchange code for access token.');
-          }
-      } else if (!accessToken) {
-          // No token and no code in URL, redirect to Spotify authentication
-          redirectToSpotifyAuth();
-          return;
-      }
+            // If still no access token after the exchange attempt, throw an error
+            if (!accessToken) {
+                throw new Error('Failed to exchange code for access token.');
+            }
+        } else if (!accessToken) {
+            // No token and no code in URL, redirect to Spotify authentication
+            redirectToSpotifyAuth();
+            return;
+        }
 
-      // Show loading animation
-      document.getElementById('loginSection').style.display = 'none';
-      document.getElementById('loadingAnimation').style.display = 'block';
+        // Show loading animation
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('loadingAnimation').style.display = 'block';
 
-      const userProfile = await getUserProfile(accessToken);
-      const songs = await getLikedSongs(accessToken);
-      const youtubeLinks = await Promise.all(songs.map(song => searchYoutube(song.name, song.artists[0].name)));
+        const userProfile = await getUserProfile(accessToken);
+        const songs = await getLikedSongs(accessToken);
+        allSongs = songs;
+        const youtubeLinks = await Promise.all(songs.map(song => searchYoutube(song.name, song.artists[0].name)));
+        
 
-      displayUserProfile(userProfile);
-      displaySongs(songs, youtubeLinks);
+        // Paginate the songs and their corresponding YouTube links
+        pages = paginateSongs(songs, youtubeLinks, SONGS_PER_PAGE);
 
-      document.getElementById('loadingAnimation').style.display = 'none';
-      document.getElementById('authorizedSection').style.display = 'block';
+        displayUserProfile(userProfile);
+        displayPage(currentPage); // Display the first page
+        sessionStorage.setItem('user_authenticated', 'true');
 
-  } catch (error) {
-      console.error(`Error processing authentication or fetching data: ${error}`);
+        document.getElementById('loadingAnimation').style.display = 'none';
+        document.getElementById('authorizedSection').style.display = 'block';
 
-      // Check for token-related error and redirect to Spotify auth if needed
-      if (error.message.includes('401') && !code) {
-          redirectToSpotifyAuth();
-          return;
-      }
+    } catch (error) {
+        console.error(`Error processing authentication or fetching data: ${error}`);
 
-      document.getElementById('loadingAnimation').style.display = 'none';
-      document.getElementById('loginSection').style.display = 'block';
-  };
+        // Check for token-related error and redirect to Spotify auth if needed
+        if (error.message.includes('401') && !code) {
+            redirectToSpotifyAuth();
+            return;
+        }
+
+        document.getElementById('loadingAnimation').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'block';
+    };
 };
+
+function paginateSongs(songs, youtubeLinks, perPage) {
+    const pages = [];
+    for (let i = 0; i < songs.length; i += perPage) {
+        pages.push({
+            songs: songs.slice(i, i + perPage),
+            youtubeLinks: youtubeLinks.slice(i, i + perPage)
+        });
+    }
+    return pages;
+}
+
+function displayPage(pageIndex) {
+  const list = document.getElementById('song-list');
+  list.innerHTML = ''; // Clear the current songs
+
+  const page = pages[pageIndex];
+  if (page) {
+      displaySongs(page.songs, page.youtubeLinks);
+  }
+
+  // Manage button states
+  document.getElementById('prevButton').disabled = (currentPage === 0);
+  document.getElementById('nextButton').disabled = (currentPage >= pages.length - 1);
+}
+
+document.getElementById('nextButton').addEventListener('click', function() {
+  if (currentPage < pages.length - 1) {
+      currentPage++;
+      displayPage(currentPage);
+      window.scrollTo(0, 0); // Scroll to the top of the page
+  }
+});
+
+document.getElementById('prevButton').addEventListener('click', function() {
+  if (currentPage > 0) {
+      currentPage--;
+      displayPage(currentPage);
+      window.scrollTo(0, 0); // Scroll to the top of the page
+  }
+});
+
 
 function displayUserProfile(userProfile) {
   const userDiv = document.createElement('div');
@@ -382,11 +414,6 @@ function applyInitialTheme() {
     darkModeButtonAuthorized.innerHTML = '<i class="fas fa-moon"></i>';
     darkModeButtonAuthorized.style.color = '#000';
     darkModeButtonAuthorized.style.backgroundColor = '#ece7e7';
-    darkModeButtonLogin.style.border = 'none';
-    
-    darkModeButtonAuthorized.innerHTML = '<i class="fas fa-moon"></i>';
-    darkModeButtonAuthorized.style.color = '#000';
-    darkModeButtonAuthorized.style.backgroundColor = '#ece7e7';
     darkModeButtonAuthorized.style.border = 'none';
   }
 }
@@ -395,44 +422,67 @@ function applyInitialTheme() {
 document.addEventListener('DOMContentLoaded', function() {
   applyInitialTheme();
 
-// Event listener to handle document ready event
-document.addEventListener('DOMContentLoaded', function() {
-  applyInitialTheme();
-
-  const accessToken = sessionStorage.getItem('spotify_access_token') || getCookie('spotify_access_token');
+  const accessToken = sessionStorage.getItem('spotify_access_token');
   const code = new URLSearchParams(window.location.search).get('code');
   const attemptingAuth = sessionStorage.getItem('attempting-auth');
+  const userAuthenticated = sessionStorage.getItem('user_authenticated'); // Get the user_authenticated value
 
-  // If there's a code in the URL and we were attempting to authenticate, handle the response right away
+  const currentTimestamp = new Date().getTime();
+  const tokenExpiryTimestamp = sessionStorage.getItem('spotify_access_token_expiry');
+
+  // Debugging statements
+  console.log("Access Token: ", accessToken);
+  console.log("Token Expiry: ", tokenExpiryTimestamp);
+  console.log("Current Timestamp: ", currentTimestamp);
+  
+  // If user has been authenticated previously, handle their data fetching
+  if (userAuthenticated === 'true') {
+      handleAuthResponse();
+      return;
+  }
+  
+  if (accessToken && (!tokenExpiryTimestamp || currentTimestamp > tokenExpiryTimestamp)) {
+      console.log("Redirecting to Spotify for authentication...");  // Debugging statement
+      redirectToSpotifyAuth();
+      return;
+  }
+
   if (code && attemptingAuth) {
-    handleAuthResponse();
-    sessionStorage.removeItem('attempting-auth');
+      handleAuthResponse();
+      sessionStorage.removeItem('attempting-auth');
+      history.replaceState(null, null, window.location.pathname); // This will clear the URL parameters
   }
 
   document.getElementById('loginButton').addEventListener('click', function() {
-    // If no access token and no code in URL, redirect to Spotify authentication
-    if (!accessToken && !code) {
-        redirectToSpotifyAuth();
-    }
+      if (!accessToken) {
+          redirectToSpotifyAuth();
+      }
   });
 });
 
   //Search input
   const searchField = document.getElementById('songSearch');
-  searchField.addEventListener('input', function() {
+  searchField.addEventListener('input', async function() {
     const query = this.value.toLowerCase();
-    const songs = document.querySelectorAll('#song-list .card');
-    songs.forEach(song => {
-      const songName = song.querySelector('.card_info').textContent.toLowerCase();
-      song.style.display = songName.includes(query) ? 'flex' : 'none';
+    const filteredSongs = allSongs.filter(song => {
+        const songName = `${song.name} by ${song.artists[0].name}`.toLowerCase();
+        return songName.includes(query);
     });
-  });
+
+    const youtubeLinks = await Promise.all(filteredSongs.map(song => searchYoutube(song.name, song.artists[0].name)));
+    
+    // Paginate the filtered songs and their corresponding YouTube links
+    pages = paginateSongs(filteredSongs, youtubeLinks, SONGS_PER_PAGE);
+    currentPage = 0; // Reset to the first page after a search
+    displayPage(currentPage);
+});
   
   const logoutButton = document.getElementById('logoutButton');
   logoutButton.addEventListener('click', function() {
-    // Clear the access token from local storage
-    localStorage.removeItem('spotifyAccessToken');
-    // Reload the page after logout.
-    location.reload();
+      // Clear the access token, expiry, and authentication state from session storage
+      sessionStorage.removeItem('spotify_access_token');
+      sessionStorage.removeItem('spotify_access_token_expiry');
+      sessionStorage.removeItem('user_authenticated');
+      // Reload the page after logout.
+      location.reload();
   });
-});
