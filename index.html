@@ -1,58 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Youtubify</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtubify</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <!--Login section-->
-    <section id="loginSection">
-      <h1>Youtubify</h1>
-      <h2>Sp<i class="fab fa-spotify"></i>tify</i> <br>to <br>YouT<i class="fab fa-youtube"></i>be</i></h2>
-      <button id="loginButton">Login with Spotify</button>
-      <button id="darkModeButtonLogin"><i class="fas fa-moon"></i> </button>
-    </section>
+    <main>
+        <!-- Login Section -->
+        <section id="loginSection">
+            <h1>Youtubify</h1>
+            <h2>
+                Sp<i class="fab fa-spotify"></i>tify to YouT<i class="fab fa-youtube"></i>be
+            </h2>
+            <button id="loginButton">Login with Spotify</button>
+            <!-- Dark Mode Toggle for Login Section -->
+            <button id="darkModeButtonLogin">
+                <i class="fas fa-moon"></i>
+            </button>
+        </section>
 
-    <!--Loading animation justbefore the authorized section and videos are rendered-->
-    <div id="loadingAnimation" style="display: none;">
-      <!-- Loading animation -->
-      <div class="loader"></div>
-    </div>  
+        <!-- Loading Animation - Visible before content is loaded -->
+        <div id="loadingAnimation" style="display: none;">
+            <div class="loader"></div>
+        </div>
 
-    <!--Authorized section - where the user is redirected to after a successful login via Spotify-->
-    <section id="authorizedSection" style="display: none;">
-      <div class="navbar">
+        <!-- Authorized Section - Displayed upon successful login -->
+        <section id="authorizedSection" style="display: none;">
+            <!-- Navbar containing user information and controls -->
+            <div class="navbar">
+                <!-- User Name and Avatar -->
+                <h2><span id="userName"></span></h2>
+                <!-- Messages to make the UI lively -->
+                <p>Hey you🙈🙈</p>
+                <!-- Dark Mode Toggle for Authorized Section -->
+                <button id="darkModeButtonAuthorized">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <!-- Logout Button -->
+                <button id="logoutButton">Logout</button>
+            </div>
 
-        <!-- User name and avatar -->
-        <h2><span id="userName"></span></h2>
+            <!-- Song Search Bar -->
+            <div id="search">
+                <input id="songSearch" type="text" placeholder="Search for a song">
+            </div>
 
-        <!-- Messages to the user to make the website a bit lively -->
-        <p>Hey you🙈🙈</p>
-        <button id="darkModeButtonAuthorized"><i class="fas fa-moon"></i> </button>
+            <!-- Song List Container -->
+            <ul id="song-list">
+                <!-- Songs will be dynamically populated here -->
+            </ul>
 
-        <!-- Logout button to log the user out and clear the local storage-->
-        <button id="logoutButton">Logout</button>
-      </div>
-    </div>
+            <!-- Pagination Controls -->
+            <div class="pagination-container">
+                <button id="prevButton" disabled>Previous</button>
+                <button id="nextButton" disabled>Next</button>
+            </div>
+        </section>
+    </main>
 
-    <div id="search">
-          <!-- Search bar to help the user search for videos in the playlist -->
-    <input id="songSearch" type="text" placeholder="Search for a song">
-    </div>
-    <ul id="song-list">
-      <!-- Songs will be populated here -->
-    </ul>
-
-    <div class="pagination-container"> 
-        <button id="prevButton" disabled>Previous</button>
-        <button id="nextButton" disabled>Next</button>
-    </div>
-    </section>
-  </main>
-  <script src="script.js"></script>
-  <script src="https://kit.fontawesome.com/6dfed83f8d.js" crossorigin="anonymous"></script>
+    <!-- External Scripts -->
+    <script src="script.js"></script>
+    <!-- FontAwesome Icons -->
+    <script src="https://kit.fontawesome.com/6dfed83f8d.js" crossorigin="anonymous"></script>
 </body>
 </html>
