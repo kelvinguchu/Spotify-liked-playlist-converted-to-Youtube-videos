@@ -16,43 +16,48 @@
       <button id="darkModeButtonLogin"><i class="fas fa-moon"></i> </button>
     </section>
 
-    <!--Loading animation justbefore the authorized section and videos are rendered-->
-    <div id="loadingAnimation" style="display: none;">
-      <!-- Loading animation -->
-      <div class="loader"></div>
-    </div>  
+        <!--Loading animation justbefore the authorized section and videos are rendered-->
+        <div id="loadingAnimation" style="display: none;">
+          <!-- Loading animation -->
+          <div class="loader"></div>
+        </div>  
 
-    <!--Authorized section - where the user is redirected to after a successful login via Spotify-->
-    <section id="authorizedSection" style="display: none;">
-      <div class="navbar">
+                <!--Authorized section - where the user is redirected to after a successful login via Spotify-->
+                <section id="authorizedSection" style="display: none;">
+                  <div class="navbar">
 
-        <!-- User name and avatar -->
-        <h2><span id="userName"></span></h2>
+                    <!-- User name and avatar -->
+                    <h2><span id="userName"></span></h2>
 
-        <!-- Messages to the user to make the website a bit lively -->
-        <p>Hey you🙈🙈</p>
-        <button id="darkModeButtonAuthorized"><i class="fas fa-moon"></i> </button>
+                    <!-- Messages to the user to make the website a bit lively -->
+                    <p>Hey you🙈🙈</p>
+                    <button id="darkModeButtonAuthorized"><i class="fas fa-moon"></i> </button>
 
-        <!-- Logout button to log the user out and clear the local storage-->
-        <button id="logoutButton">Logout</button>
+                    <!-- Logout button to log the user out and clear the local storage-->
+                    <button id="logoutButton">Logout</button>
+                  </div>
+            </div>
+
+            <div id="search">
+                  <!-- Search bar to help the user search for videos in the playlist -->
+            <input id="songSearch" type="text" placeholder="Search for a song">
+            </div>
+
+          <ul id="song-list">
+            <!-- Songs will be populated here -->
+          </ul>
+
+      <div class="pagination-container"> 
+          <button id="prevButton" disabled>Previous</button>
+          <button id="nextButton" disabled>Next</button>
       </div>
-    </div>
-
-    <div id="search">
-          <!-- Search bar to help the user search for videos in the playlist -->
-    <input id="songSearch" type="text" placeholder="Search for a song">
-    </div>
-    <ul id="song-list">
-      <!-- Songs will be populated here -->
-    </ul>
-
-    <div class="pagination-container"> 
-        <button id="prevButton" disabled>Previous</button>
-        <button id="nextButton" disabled>Next</button>
-    </div>
     </section>
   </main>
+
+  <!--Script running the logic-->
   <script src="script.js"></script>
+
+  <!--Script to enable access for font-awesome icons-->
   <script src="https://kit.fontawesome.com/6dfed83f8d.js" crossorigin="anonymous"></script>
 </body>
 </html>
