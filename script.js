@@ -6,12 +6,31 @@
  * and display a YouTube video for each song.
  */
 
-// Constants for Spotify and YouTube APIs
+// Constants for Spotify API
 const clientId = '473e1292e9714be2b9defd20feebd4eb';
 const clientSecret = 'b58bd34301a9493dbba1a1e36fcd4fe3';
 const redirectUri = 'https://you-tubify.vercel.app/';
+
+//Constant for YouTube APi
 const apiKey = 'AIzaSyDeby8kdPYzUQawOqFiNRp_UJ34Zmvaag8';
+
+//Array initialised keep track of all songs to enable easy search
 let allSongs = [];
+
+/*
+*-Variables to keep track of the pages' URLs
+*-Keep the count of the pages 
+*--Also keep an array that will contain the particular songs in a given page
+*this works by popping and pushing whereby if a user clicks next, the song videos in that
+*will be removed and another 12 song videos are added, without having to load another page
+*/
+const SONGS_PER_PAGE = 12; // Number of songs displayed per page. Adjust as needed.
+let nextPageUrl = null;
+let prevPageUrl = null;
+let currentPage = 0; // Start from the first page
+let pages = []; // Will contain the paginated songs
+
+//---------SPOTIFY LOGIC------
 
 // Function to redirect to Spotify Authentication page
 function redirectToSpotifyAuth() {
@@ -49,10 +68,10 @@ async function getAccessToken(code) {
 }
 
 
-// Function to retrieve liked songs from Spotify
-let nextPageUrl = null;
-let prevPageUrl = null;
-
+/*
+*Function to retrieve liked songs from Spotify
+*Fetches them in page batches
+*/ 
 async function getLikedSongs(accessToken, url = 'https://api.spotify.com/v1/me/tracks?limit=50') {
     const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -69,7 +88,26 @@ async function getLikedSongs(accessToken, url = 'https://api.spotify.com/v1/me/t
     return tracks;
 };
 
+// Function to retrieve user profile from Spotify
+async function getUserProfile(accessToken) {
+  const response = await fetch('https://api.spotify.com/v1/me', {
+    headers: { 'Authorization': `Bearer ${accessToken}` }
+  });
 
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  } else {
+    const data = await response.json();
+
+    // Using optional chaining in case the images array is empty
+    const imageUrl = data.images[0]?.url;
+    return { ...data, imageUrl };
+  };
+};
+
+
+
+//-----------YOUTUBE LOGIC-------------
 
 // Function to search YouTube and return first video ID
 async function searchYoutube(songName, artistName) {
@@ -90,6 +128,7 @@ async function searchYoutube(songName, artistName) {
   localStorage.setItem(cacheKey, videoId);
   return videoId;
 };
+
 
 // Function to display songs and their corresponding YouTube links on webpage
 function displaySongs(songs, youtubeLinks) {
@@ -118,7 +157,7 @@ function displaySongs(songs, youtubeLinks) {
     youtubeEmbedContainer.appendChild(youtubeEmbed);
     listItem.appendChild(youtubeEmbedContainer);
 
-    // Create a paragraph for the song info
+    // Create a paragraph for the song info(artist and song name)
     const songInfo = document.createElement('p');
     songInfo.className = 'card_info';
     songInfo.textContent = `${song.name} by ${song.artists[0].name}`;
@@ -128,27 +167,13 @@ function displaySongs(songs, youtubeLinks) {
   });
 };
 
-// Function to retrieve user profile from Spotify
-async function getUserProfile(accessToken) {
-  const response = await fetch('https://api.spotify.com/v1/me', {
-    headers: { 'Authorization': `Bearer ${accessToken}` }
-  });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  } else {
-    const data = await response.json();
+//-----COMBINATION OF THE TWO TO MAKE THE MAGIC HAPPEN👀--------
 
-    // Using optional chaining in case the images array is empty
-    const imageUrl = data.images[0]?.url;
-    return { ...data, imageUrl };
-  };
-};
 
-// Function to handle authentication response
-const SONGS_PER_PAGE = 12; // Number of songs displayed per page. Adjust as needed.
-let currentPage = 0; // Start from the first page
-let pages = []; // Will contain the paginated songs
+/*
+*Function to handle authentication response
+*/
 
 async function handleAuthResponse() {
     let accessToken = sessionStorage.getItem('spotify_access_token');
@@ -205,59 +230,82 @@ async function handleAuthResponse() {
     };
 };
 
+
+/**
+ * Splits an array of songs and their corresponding YouTube links into smaller arrays (or "pages") of a specified size.
+ * 
+ * @param {Array} songs - An array containing all the songs.
+ * @param {Array} youtubeLinks - An array containing the YouTube links corresponding to each song.
+ * @param {number} perPage - The number of songs (and their YouTube links) you want to have on each page.
+ * @return {Array} An array containing the paginated songs and their corresponding YouTube links.
+ */
 function paginateSongs(songs, youtubeLinks, perPage) {
-    const pages = [];
-    for (let i = 0; i < songs.length; i += perPage) {
-        pages.push({
-            songs: songs.slice(i, i + perPage),
-            youtubeLinks: youtubeLinks.slice(i, i + perPage)
-        });
-    }
-    return pages;
+  // Initialize an empty array to hold the paginated songs and YouTube links.
+  const pages = [];
+  
+  // Iterate through the songs array in steps of 'perPage'.
+  for (let i = 0; i < songs.length; i += perPage) {
+      
+      // Slice out a portion of the songs and youtubeLinks arrays based on the current index and 'perPage'.
+      // Then, push this "page" into the pages array.
+      pages.push({
+          songs: songs.slice(i, i + perPage),
+          youtubeLinks: youtubeLinks.slice(i, i + perPage)
+      });
+  }
+
+  // Return the paginated songs and YouTube links.
+  return pages;
 }
 
-function displayPage(pageIndex) {
-  const list = document.getElementById('song-list');
-  list.innerHTML = ''; // Clear the current songs
 
+/**
+ * Displays a specific "page" of songs and their corresponding YouTube links on the web page.
+ * Also manages the state of the pagination buttons based on the current page being displayed.
+ *
+ * @param {number} pageIndex - The index of the desired page to be displayed.
+ */
+function displayPage(pageIndex) {
+  // Get a reference to the HTML element with ID 'song-list'. This is where the songs and videos are displayed.
+  const list = document.getElementById('song-list');
+
+  // Clear any previously displayed songs and videos from the 'song-list' container.
+  list.innerHTML = '';
+
+  // Access the specific "page" of songs and YouTube links from the 'pages' array using the provided 'pageIndex'.
   const page = pages[pageIndex];
+
+  // If the desired page exists, call the 'displaySongs' function to render/display the songs and videos on the web page.
   if (page) {
       displaySongs(page.songs, page.youtubeLinks);
   }
 
-  // Manage button states
+  // Manage the state of the 'prevButton'. Disable it if the current page is the first page.
   document.getElementById('prevButton').disabled = (currentPage === 0);
+
+  // Manage the state of the 'nextButton'. Disable it if the current page is the last page.
   document.getElementById('nextButton').disabled = (currentPage >= pages.length - 1);
 }
 
-document.getElementById('nextButton').addEventListener('click', function() {
-  if (currentPage < pages.length - 1) {
-      currentPage++;
-      displayPage(currentPage);
-      window.scrollTo(0, 0); // Scroll to the top of the page
-  }
-});
-
-document.getElementById('prevButton').addEventListener('click', function() {
-  if (currentPage > 0) {
-      currentPage--;
-      displayPage(currentPage);
-      window.scrollTo(0, 0); // Scroll to the top of the page
-  }
-});
-
-
+/**
+ * Displays the user's profile information on the web page.
+ *
+ * @param {Object} userProfile - Object containing user's Spotify profile details.
+ */
 function displayUserProfile(userProfile) {
+  // Create a new div for the user's profile.
   const userDiv = document.createElement('div');
   userDiv.style.display = 'flex';
   userDiv.style.alignItems = 'center';
   userDiv.style.gap = '10px';
 
+  // Create a span to display the user's name.
   const userName = document.createElement('span');
   userName.textContent = userProfile.display_name;
   userName.style.alignSelf = 'center';
   userDiv.appendChild(userName);
 
+  // If the user has a profile image, display it.
   if (userProfile.imageUrl) {
       const img = document.createElement('img');
       img.src = userProfile.imageUrl;
@@ -265,21 +313,32 @@ function displayUserProfile(userProfile) {
       img.style.height = "50px";
       img.style.width = "50px";
       img.style.borderRadius = "50%";
-      userDiv.prepend(img);
+      userDiv.prepend(img);  // Add the image to the beginning of the userDiv.
   };
 
+  // Replace the existing 'userName' element on the page with the new userDiv.
   document.getElementById('userName').replaceWith(userDiv);
 };
 
+//--------UTILITY FUNCTIONS-----------
 
-// Function to shuffle an array using Fisher-Yates algorithm
+/**
+ * Shuffles an array using the Fisher-Yates (also known as the Knuth or Durstenfeld) algorithm.
+ * The algorithm works by iterating through the array from the end to the beginning. 
+ * For each iteration, it randomly selects an index from 0 to the current index (inclusive), 
+ * and then swaps the elements at the current index and the randomly selected index.
+ *
+ * @param {Array} array - The array to shuffle.
+ * @return {Array} The shuffled array.
+ */
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    const j = Math.floor(Math.random() * (i + 1)); // Randomly select an index from 0 to i.
+    [array[i], array[j]] = [array[j], array[i]]; // Swap the elements at indices i and j.
   }
   return array;
 };
+
 
 // Array of messages
 const messages = [
@@ -356,103 +415,170 @@ function changeMessage() {
 // Change the message every 10 seconds
 setInterval(changeMessage, 10000);
 
-document.getElementById('darkModeButtonLogin').addEventListener('click', toggleDarkMode);
-document.getElementById('darkModeButtonAuthorized').addEventListener('click', toggleDarkMode);
-
-// Function to toggle dark mode
+// Function to toggle between dark mode and light mode
 function toggleDarkMode() {
+  // Get a reference to the document body
   const body = document.body;
+
+  // Toggle the 'dark-mode' class on the body. If the class exists, it's removed; if it doesn't, it's added.
   body.classList.toggle('dark-mode');
 
-  // Switch the icon and the text
+  // Check if the body now has the 'dark-mode' class
   const isDarkMode = body.classList.contains('dark-mode');
+
+  // If in dark mode
   if (isDarkMode) {
+    // Change button content to a sun icon (indicating switch to light mode)
     this.innerHTML = '<i class="fas fa-sun"></i> ';
+
+    // Set the button styles appropriate for dark mode
     this.style.color = '#fff';
     this.style.backgroundColor = 'rgba(4, 4, 4)';
     this.style.border = 'none';
 
+    // Store the current theme mode (dark) in the local storage
     localStorage.setItem('theme', 'dark-mode');
-  } else {
+  }
+  // If in light mode
+  else {
+    // Change button content to a moon icon (indicating switch to dark mode)
     this.innerHTML = '<i class="fas fa-moon"></i>';
+
+    // Set the button styles appropriate for light mode
     this.style.color = '#000';
     this.style.backgroundColor = '#ece7e7';
     this.style.border = 'none';
 
+    // Clear the theme mode from local storage (default to light mode)
     localStorage.setItem('theme', '');
-  }
-}
+  };
+};
 
 
-// Function to apply the initial theme
+
+// Function to set the theme based on the user's previous choice (stored in local storage)
 function applyInitialTheme() {
+  // Retrieve the theme preference stored in local storage
   const storedTheme = localStorage.getItem('theme');
+
+  // If a theme was previously selected and stored, apply it to the body
   if (storedTheme) {
     document.body.classList.add(storedTheme);
   }
 
+  // Check if the current theme is dark mode
   const isDarkMode = document.body.classList.contains('dark-mode');
-  const darkModeButtonLogin = document.getElementById('darkModeButtonLogin');
 
-  // Initialize the button style
+  // Get references to the login and authorized dark mode toggle buttons
+  const darkModeButtonLogin = document.getElementById('darkModeButtonLogin');
+  const darkModeButtonAuthorized = document.getElementById('darkModeButtonAuthorized');
+
+  // Adjust button styles and content based on the current theme
   if (isDarkMode) {
+    // For dark mode, change button content to a sun icon (indicating switch to light mode)
     darkModeButtonLogin.innerHTML = '<i class="fas fa-sun"></i> ';
+    // Set the button styles appropriate for dark mode
     darkModeButtonLogin.style.color = '#fff';
     darkModeButtonLogin.style.backgroundColor = 'rgba(4, 4, 4)';
     darkModeButtonLogin.style.border = 'none';
     
+    // Do the same for the authorized dark mode button
     darkModeButtonAuthorized.innerHTML = '<i class="fas fa-sun"></i> ';
     darkModeButtonAuthorized.style.color = '#fff';
     darkModeButtonAuthorized.style.backgroundColor = 'rgba(4, 4, 4)';
     darkModeButtonAuthorized.style.border = 'none';
-  } else {
+  } 
+  // If it's light mode
+  else {
+    // Change button content to a moon icon (indicating switch to dark mode)
     darkModeButtonLogin.innerHTML = '<i class="fas fa-moon"></i>';
+    // Set the button styles appropriate for light mode
     darkModeButtonLogin.style.color = '#000';
     darkModeButtonLogin.style.backgroundColor = '#ece7e7';
     darkModeButtonLogin.style.border = 'none';
     
+    // Do the same for the authorized dark mode button
     darkModeButtonAuthorized.innerHTML = '<i class="fas fa-moon"></i>';
     darkModeButtonAuthorized.style.color = '#000';
     darkModeButtonAuthorized.style.backgroundColor = '#ece7e7';
     darkModeButtonAuthorized.style.border = 'none';
-  }
-}
+  };
+};
 
-// Event listener to handle document ready event
+// Search input functionality
+const searchField = document.getElementById('songSearch');
+
+// Add an event listener to detect and respond to user input in the search field
+searchField.addEventListener('input', async function() {
+    // Get the user's query and convert it to lowercase for case-insensitive search
+    const query = this.value.toLowerCase();
+    
+    // Filter the songs based on the user's query
+    const filteredSongs = allSongs.filter(song => {
+        // Combine song name and artist name, then convert to lowercase for comparison
+        const songName = `${song.name} by ${song.artists[0].name}`.toLowerCase();
+        // Check if the song's details contain the user's query
+        return songName.includes(query);
+    });
+
+    // For each filtered song, fetch its corresponding YouTube link
+    const youtubeLinks = await Promise.all(filteredSongs.map(song => searchYoutube(song.name, song.artists[0].name)));
+    
+    // Paginate the filtered songs and their corresponding YouTube links
+    pages = paginateSongs(filteredSongs, youtubeLinks, SONGS_PER_PAGE);
+    
+    // Reset to the first page of results after a search
+    currentPage = 0;
+    
+    // Display the first page of the filtered results
+    displayPage(currentPage);
+});
+
+
+//---------EVENT LISTENERS----------
+
+//Event listeners to toggle between dark mode and light mode
+document.getElementById('darkModeButtonLogin').addEventListener('click', toggleDarkMode);
+document.getElementById('darkModeButtonAuthorized').addEventListener('click', toggleDarkMode);
+
+// Event listener that fires when the document has been completely loaded and parsed
 document.addEventListener('DOMContentLoaded', function() {
+  // Set the theme based on the user's previous choice (stored in local storage)
   applyInitialTheme();
 
+  // Retrieve access token and other related data from session storage
   const accessToken = sessionStorage.getItem('spotify_access_token');
   const code = new URLSearchParams(window.location.search).get('code');
   const attemptingAuth = sessionStorage.getItem('attempting-auth');
-  const userAuthenticated = sessionStorage.getItem('user_authenticated'); // Get the user_authenticated value
+  const userAuthenticated = sessionStorage.getItem('user_authenticated'); // Get the user's authentication status
 
+  // Fetch the current timestamp and the token's expiry timestamp for comparison
   const currentTimestamp = new Date().getTime();
   const tokenExpiryTimestamp = sessionStorage.getItem('spotify_access_token_expiry');
-
-  // Debugging statements
-  console.log("Access Token: ", accessToken);
-  console.log("Token Expiry: ", tokenExpiryTimestamp);
-  console.log("Current Timestamp: ", currentTimestamp);
   
-  // If user has been authenticated previously, handle their data fetching
+  // If the user was authenticated in a previous session, proceed to handle their data fetching
   if (userAuthenticated === 'true') {
       handleAuthResponse();
       return;
   }
   
+  // If there's an access token but it's expired (or close to expiring), redirect to Spotify for re-authentication
   if (accessToken && (!tokenExpiryTimestamp || currentTimestamp > tokenExpiryTimestamp)) {
       console.log("Redirecting to Spotify for authentication...");  // Debugging statement
       redirectToSpotifyAuth();
       return;
   }
 
+  // If there's a code in the URL and the app is attempting to authenticate, handle the authentication response
   if (code && attemptingAuth) {
       handleAuthResponse();
+      // Remove the 'attempting-auth' flag from session storage after authentication is handled
       sessionStorage.removeItem('attempting-auth');
-      history.replaceState(null, null, window.location.pathname); // This will clear the URL parameters
+      // Clear the URL parameters to keep the address clean
+      history.replaceState(null, null, window.location.pathname);
   }
 
+  // Add an event listener to the login button to trigger Spotify authentication when clicked
   document.getElementById('loginButton').addEventListener('click', function() {
       if (!accessToken) {
           redirectToSpotifyAuth();
@@ -460,29 +586,29 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-  //Search input
-  const searchField = document.getElementById('songSearch');
-  searchField.addEventListener('input', async function() {
-    const query = this.value.toLowerCase();
-    const filteredSongs = allSongs.filter(song => {
-        const songName = `${song.name} by ${song.artists[0].name}`.toLowerCase();
-        return songName.includes(query);
-    });
-
-    const youtubeLinks = await Promise.all(filteredSongs.map(song => searchYoutube(song.name, song.artists[0].name)));
-    
-    // Paginate the filtered songs and their corresponding YouTube links
-    pages = paginateSongs(filteredSongs, youtubeLinks, SONGS_PER_PAGE);
-    currentPage = 0; // Reset to the first page after a search
-    displayPage(currentPage);
+//Event listener for the next button.
+document.getElementById('nextButton').addEventListener('click', function() {
+  if (currentPage < pages.length - 1) {
+      currentPage++;
+      displayPage(currentPage);
+      window.scrollTo(0, 0); // Scroll to the top of the page after clicking next
+  }
 });
-  
-  const logoutButton = document.getElementById('logoutButton');
-  logoutButton.addEventListener('click', function() {
-      // Clear the access token, expiry, and authentication state from session storage
-      sessionStorage.removeItem('spotify_access_token');
-      sessionStorage.removeItem('spotify_access_token_expiry');
-      sessionStorage.removeItem('user_authenticated');
-      // Reload the page after logout.
-      location.reload();
-  });
+
+//Event listener for the previous button.
+document.getElementById('prevButton').addEventListener('click', function() {
+  if (currentPage > 0) {
+      currentPage--;
+      displayPage(currentPage);
+      window.scrollTo(0, 0); // Scroll to the top of the page after clicking previous
+  }
+});
+
+//Event listener for the logout button.
+const logoutButton = document.getElementById('logoutButton');
+logoutButton.addEventListener('click', function() {
+    // Clear the access token, expiry, and authentication state from session storage
+    sessionStorage.removeItem('spotify_access_token');
+    sessionStorage.removeItem('spotify_access_token_expiry');
+    sessionStorage.removeItem('user_authenticated');
+});
