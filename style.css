@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 
-/* Reset the default padding and margin */
+/* Reset the default padding and margin  for the whole document*/
 * {
   margin: 0;
   padding: 0;
@@ -188,20 +188,6 @@ body {
   background-color: '#ece7e7'; 
 }
 
-.dark-mode #logoutButton {
-  color: #000;
-}
-
-.dark-mode #prevButton, .dark-mode #nextButton {
-  background-color: #1DB954;
-  color: #000;
-}
-
-.dark-mode #prevButton:hover, .dark-mode #nextButton:hover {
-  background-color: #1ed760;
-  color: #000;
-}
-
 #darkModeButtonAuthorized{
   margin-left: 10%;
 }
@@ -217,11 +203,28 @@ body {
   transform: translateY(-3px);
 }
 
+/* 
+*Utility class for the dark mode
+*Containing all the styles for the dark mode
+*/
+.dark-mode #logoutButton {
+  color: #000;
+}
+
+.dark-mode #prevButton, .dark-mode #nextButton {
+  background-color: #1DB954;
+  color: #000;
+}
+
+.dark-mode #prevButton:hover, .dark-mode #nextButton:hover {
+  background-color: #1ed760;
+  color: #000;
+}
+
 body.dark-mode {
   background-color: rgba(4, 4, 4);
   color: #ffffff;
 }
-
 
 .dark-mode .navbar {
   background-color: rgba(4, 4, 4);
@@ -278,6 +281,7 @@ body.dark-mode {
   background-color: rgba(4, 4, 4);
 }
 
+/*A div that contains the search bar to allow it to stick to the top*/
 #search {
   position: -webkit-sticky;
   position: sticky;
@@ -300,6 +304,8 @@ body.dark-mode {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+
+/*The song list area*/
 #songSection {
     display: flex;
     align-items: center;
@@ -318,6 +324,7 @@ body.dark-mode {
   margin: 10px;
 }
 
+/*Cards containing the song videos*/
 .card {
   width: 310px;
   height: 300px;
@@ -366,6 +373,8 @@ body.dark-mode {
   border: none;
 }
 
+
+/*Loadin animation to show after the user clicks the login button and verifies the spotify account*/
 #loadingAnimation {
   display: none;
   position: fixed;
@@ -420,7 +429,7 @@ body.dark-mode {
 }
 
 
-
+/*Style for smaller devices*/
 @media (max-width: 600px) {
 
   * {
@@ -441,7 +450,6 @@ body.dark-mode {
     font-size: 16px;
   }
 
-  /* Style for span (username) in h2 */
   .navbar h2 span {
     font-size: 16px;
   }
