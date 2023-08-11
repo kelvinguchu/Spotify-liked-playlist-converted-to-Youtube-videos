@@ -211,6 +211,12 @@ body {
   color: #000;
 }
 
+.dark-mode #prevButton:disabled, 
+.dark-mode #nextButton:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
 .dark-mode #prevButton, .dark-mode #nextButton {
   background-color: #1DB954;
   color: #000;
