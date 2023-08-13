@@ -28,16 +28,16 @@ export default CONFIG;
 **Note:** The redirect URI should be the same, both on your `config.js` file and Spotify developer dashboard.
 
 # Tech Stack
--HTML.
--CSS.
--JavaScript.
+- HTML.
+- CSS.
+- JavaScript.
 
 # Features
 1. Login and user authentication.
 2. Logout functionality.
 3. Pagination: To reduce the API calls made to the Spotify and YouTube APIs, I added this feature to improve the loading and scroll performance. Also utilise the YouTube quota, because maybe the user wants to view like the recent 5 like songs, there is no need to query for all the liked songs in their playlist. The limit per page is 12.
+4. Search functionality: To minimise the time used to search all through the videos manually, a search functionality was necessary. The search can also access the videos even though they aren't displayed in the current page.<br>
 
-4. Search functionality: To minimise the time used to search all through the videos manually, a search functionality was necessary. The search can also access the videos even though they aren't displayed in the current page.
 The code:
 ``` javascript
 // Search input functionality
@@ -70,9 +70,10 @@ searchField.addEventListener('input', async function() {
 });
 ```
 5. Dark mode support: This is just a matter of preference of the user, it is necessary to have.
-Also it is saved to the local storage to ensure that the user doesn't have to reselect again.
-The code:
-CSS:
+Also it is saved to the local storage to ensure that the user doesn't have to reselect again. <br>
+The code:<br>
+
+**CSS:**
 ``` css
 /* 
 *Utility class for the dark mode
@@ -159,7 +160,7 @@ body.dark-mode {
 }
 ```
 
-JavaScript
+**JavaScript:**
 ``` javascript
 // Function to toggle between dark mode and light mode
 function toggleDarkMode() {
