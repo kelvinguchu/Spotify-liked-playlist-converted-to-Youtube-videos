@@ -6,13 +6,19 @@
  * and display a YouTube video for each song.
  */
 
-// Constants for Spotify API
-const clientId = '473e1292e9714be2b9defd20feebd4eb';
-const clientSecret = 'b58bd34301a9493dbba1a1e36fcd4fe3';
-const redirectUri = 'https://you-tubify.vercel.app/';
+//Import the API keys from the config.js file.
+import CONFIG from './config.js';
 
-//Constant for YouTube APi
-const apiKey = 'AIzaSyDeby8kdPYzUQawOqFiNRp_UJ34Zmvaag8';
+//spotify credentials
+const clientId = CONFIG.SPOTIFY_CLIENT_ID;
+const clientSecret = CONFIG.SPOTIFY_CLIENT_SECRET;
+const redirectUri = CONFIG.REDIRECT_URI;
+
+
+//YouTube API key
+const apiKey = CONFIG.YOUTUBE_API_KEY;
+
+
 
 //Array initialised keep track of all songs to enable easy search
 let allSongs = [];
