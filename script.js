@@ -14,14 +14,14 @@ const clientId = CONFIG.SPOTIFY_CLIENT_ID;
 const clientSecret = CONFIG.SPOTIFY_CLIENT_SECRET;
 const redirectUri = CONFIG.REDIRECT_URI;
 
-
 //YouTube API key
 const apiKey = CONFIG.YOUTUBE_API_KEY;
 
-
-
 //Array initialised keep track of all songs to enable easy search
 let allSongs = [];
+
+// Search input const
+const searchField = document.getElementById('songSearch');
 
 /*
 *-Variables to keep track of the pages' URLs
@@ -511,37 +511,34 @@ function applyInitialTheme() {
   };
 };
 
-// Search input functionality
-const searchField = document.getElementById('songSearch');
+
+//---------EVENT LISTENERS----------
 
 // Add an event listener to detect and respond to user input in the search field
 searchField.addEventListener('input', async function() {
-    // Get the user's query and convert it to lowercase for case-insensitive search
-    const query = this.value.toLowerCase();
-    
-    // Filter the songs based on the user's query
-    const filteredSongs = allSongs.filter(song => {
-        // Combine song name and artist name, then convert to lowercase for comparison
-        const songName = `${song.name} by ${song.artists[0].name}`.toLowerCase();
-        // Check if the song's details contain the user's query
-        return songName.includes(query);
-    });
+  // Get the user's query and convert it to lowercase for case-insensitive search
+  const query = this.value.toLowerCase();
+  
+  // Filter the songs based on the user's query
+  const filteredSongs = allSongs.filter(song => {
+      // Combine song name and artist name, then convert to lowercase for comparison
+      const songName = `${song.name} by ${song.artists[0].name}`.toLowerCase();
+      // Check if the song's details contain the user's query
+      return songName.includes(query);
+  });
 
-    // For each filtered song, fetch its corresponding YouTube link
-    const youtubeLinks = await Promise.all(filteredSongs.map(song => searchYoutube(song.name, song.artists[0].name)));
-    
-    // Paginate the filtered songs and their corresponding YouTube links
-    pages = paginateSongs(filteredSongs, youtubeLinks, SONGS_PER_PAGE);
-    
-    // Reset to the first page of results after a search
-    currentPage = 0;
-    
-    // Display the first page of the filtered results
-    displayPage(currentPage);
+  // For each filtered song, fetch its corresponding YouTube link
+  const youtubeLinks = await Promise.all(filteredSongs.map(song => searchYoutube(song.name, song.artists[0].name)));
+  
+  // Paginate the filtered songs and their corresponding YouTube links
+  pages = paginateSongs(filteredSongs, youtubeLinks, SONGS_PER_PAGE);
+  
+  // Reset to the first page of results after a search
+  currentPage = 0;
+  
+  // Display the first page of the filtered results
+  displayPage(currentPage);
 });
-
-
-//---------EVENT LISTENERS----------
 
 //Event listeners to toggle between dark mode and light mode
 document.getElementById('darkModeButtonLogin').addEventListener('click', toggleDarkMode);
