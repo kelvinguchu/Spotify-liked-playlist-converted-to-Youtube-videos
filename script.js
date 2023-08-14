@@ -31,8 +31,6 @@ const searchField = document.getElementById('songSearch');
 *will be removed and another 12 song videos are added, without having to load another page
 */
 const SONGS_PER_PAGE = 12; // Number of songs displayed per page. Adjust as needed.
-let nextPageUrl = null;
-let prevPageUrl = null;
 let currentPage = 0; // Start from the first page
 let pages = []; // Will contain the paginated songs
 
