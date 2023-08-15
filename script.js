@@ -9,6 +9,14 @@
 //Import the API keys from the config.js file.
 import CONFIG from './config.js';
 
+const tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+const firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+
+let currentPlayingPlayer = null;
+
 //spotify credentials
 const clientId = CONFIG.SPOTIFY_CLIENT_ID;
 const clientSecret = CONFIG.SPOTIFY_CLIENT_SECRET;
@@ -32,6 +40,8 @@ const searchField = document.getElementById('songSearch');
 */
 const SONGS_PER_PAGE = 12; // Number of songs displayed per page. Adjust as needed.
 let currentPage = 0; // Start from the first page
+let nextPageUrl = null;
+let prevPageUrl = null;
 let pages = []; // Will contain the paginated songs
 
 //---------SPOTIFY LOGIC------
@@ -146,19 +156,11 @@ function displaySongs(songs, youtubeLinks) {
     const youtubeEmbedContainer = document.createElement('div');
     youtubeEmbedContainer.className = 'card_video';
 
-    // Create the YouTube embed
-    const youtubeEmbed = document.createElement('iframe');
-    youtubeEmbed.width = "100%";
-    youtubeEmbed.height = "100%";
-    youtubeEmbed.src = `https://www.youtube.com/embed/${youtubeLinks[i]}`;
-    youtubeEmbed.title = "YouTube video player";
-    youtubeEmbed.frameborder = "0";
-    youtubeEmbed.style.borderRadius = "15px";
-    youtubeEmbed.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-    youtubeEmbed.allowFullscreen = true;
-    youtubeEmbed.loading = "lazy"; // Enable lazy loading
+    // Create a div to hold the YouTube player
+    const youtubeEmbedDiv = document.createElement('div');
+    youtubeEmbedDiv.id = `player-${i}`;
+    youtubeEmbedContainer.appendChild(youtubeEmbedDiv);
 
-    youtubeEmbedContainer.appendChild(youtubeEmbed);
     listItem.appendChild(youtubeEmbedContainer);
 
     // Create a paragraph for the song info(artist and song name)
@@ -168,8 +170,26 @@ function displaySongs(songs, youtubeLinks) {
 
     listItem.appendChild(songInfo);
     list.appendChild(listItem);
+
+    // Initialize the YouTube player with the IFrame Player API
+    const player = new YT.Player(`player-${i}`, {
+      height: '100%',
+      width: '100%',
+      videoId: youtubeLinks[i],
+      events: {
+        'onStateChange': (event) => {
+          if (event.data === YT.PlayerState.PLAYING) {
+            if (currentPlayingPlayer && currentPlayingPlayer !== event.target) {
+              currentPlayingPlayer.pauseVideo();
+            }
+            currentPlayingPlayer = event.target;
+          }
+        }
+      }
+    });
   });
 };
+
 
 
 //-----COMBINATION OF THE TWO TO MAKE THE MAGIC HAPPEN👀--------
@@ -325,6 +345,7 @@ function displayUserProfile(userProfile) {
 };
 
 //--------UTILITY FUNCTIONS-----------
+
 
 /**
  * Shuffles an array using the Fisher-Yates (also known as the Knuth or Durstenfeld) algorithm.
