@@ -87,20 +87,30 @@ async function getAccessToken(code) {
 *Fetches them in page batches
 */ 
 async function getLikedSongs(accessToken, url = 'https://api.spotify.com/v1/me/tracks?limit=50') {
-    const response = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
+    let allTracks = [];
+    let continueFetching = true;
 
-    const data = await response.json();
+    while (continueFetching) {
+        const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
 
-    let tracks = data.items.map(item => item.track);
+        const data = await response.json();
 
-    // Store the next and previous URLs for pagination
-    nextPageUrl = data.next;
-    prevPageUrl = data.previous;
+        let tracks = data.items.map(item => item.track);
+        allTracks.push(...tracks);
 
-    return tracks;
-};
+        // Check if there's a next page
+        if (data.next) {
+            url = data.next;
+        } else {
+            continueFetching = false;
+        }
+    }
+
+    return allTracks;
+}
+
 
 // Function to retrieve user profile from Spotify
 async function getUserProfile(accessToken) {
