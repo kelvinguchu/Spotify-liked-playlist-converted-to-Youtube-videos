@@ -9,13 +9,23 @@
 //Import the API keys from the config.js file.
 import CONFIG from './config.js';
 
+// Create a new <script> element
 const tag = document.createElement('script');
+
+// Set the 'src' attribute of the new <script> element to the URL of the YouTube IFrame API
 tag.src = "https://www.youtube.com/iframe_api";
+
+// Get the first <script> element on the page
 const firstScriptTag = document.getElementsByTagName('script')[0];
+
+// Insert the new <script> element before the first <script> element on the page
+// This ensures that the YouTube IFrame API script is loaded before any other script on the page
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-
+// Declare a variable named 'currentPlayingPlayer' and initialize it with the value 'null'
+// This variable will likely be used to store a reference to the currently playing YouTube player
 let currentPlayingPlayer = null;
+
 
 //spotify credentials
 const clientId = CONFIG.SPOTIFY_CLIENT_ID;
@@ -106,10 +116,10 @@ async function getLikedSongs(accessToken, url = 'https://api.spotify.com/v1/me/t
         } else {
             continueFetching = false;
         }
-    }
+    };
 
     return allTracks;
-}
+};
 
 
 // Function to retrieve user profile from Spotify
