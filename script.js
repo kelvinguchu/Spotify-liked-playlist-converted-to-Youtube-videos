@@ -654,3 +654,6 @@ logoutButton.addEventListener('click', function() {
     sessionStorage.removeItem('spotify_access_token_expiry');
     sessionStorage.removeItem('user_authenticated');
 });
+
+
+//--------SCRIPT WRITTEN BY GUCHU KELVIN WITH ❤️-----------
